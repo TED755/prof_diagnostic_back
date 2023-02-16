@@ -35,5 +35,5 @@ def login(request):
     password = data.get('password')
 
     if email == right_email and password == right_password:
-        return HttpResponse(request, {'name':'Test User One', 'email':email, 'status':'OK'})
-    else: return HttpResponse(request, {'email':email, 'error':'Invalid email or password'})
+        return HttpResponse(request, json.dumps({'name':'Test User One', 'email':email, 'status':'OK'}))
+    else: return HttpResponse(request, json.dumps({'email':email, 'error':'Invalid email or password'}))

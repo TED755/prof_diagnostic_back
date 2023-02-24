@@ -10,3 +10,6 @@ class UserHelpers():
     
     def check_password(user: User, password):
         return UserHelpers.decrypt_password(user.password) == password
+        
+    def json_user(user: User):
+        return {'email': user.email}

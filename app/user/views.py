@@ -32,6 +32,7 @@ def login(request):
             'error': 'bla bla bla',
         })
 
+    # response: json {'user_id', tokens{refresh, access}, user_info}
     login_user = UserActivity.login(data)
     if not login_user:
         return HttpResponse(request, json.dumps({'error':'Invalid email or password'}))

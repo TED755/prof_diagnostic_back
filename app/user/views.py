@@ -26,18 +26,24 @@ def login(request):
     # right_email = 'test_user1@test.com'
     # right_password = '123'
     try:
-        data = json.loads(request.body.decode())
+        data = json.loads(request.body.decode('utf-8'))
     except ValueError:
         return HttpResponse({
             'error': 'bla bla bla',
         })
 
-    # response: json {'user_id', tokens{refresh, access}, user_info}
+    # response: json {'status','erorr','user_id', tokens{refresh, access}, user_info}
     login_user = UserActivity.login(data)
-    if not login_user:
-        return HttpResponse(request, json.dumps({'error':'Invalid email or password'}))
-    return HttpResponse(request, json.dumps({'status':'OK', 
-        'data':{'name':login_user.name, 'email':login_user.email}, 'session':{}}))
+
+    print(login_user)
+    return HttpResponse(login_user, content_type="text/plain", charset='utf-8')
+
+    # if not login_user:
+    #     return HttpResponse(request, json.dumps({'error':'Invalid email or password'}))
+    # return HttpResponse(request, json.dumps({'status':'OK', 
+    #     'data':{'name':login_user.name, 'email':login_user.email}, 'session':{}}))
+
+
     # email = data.get('email')
     # password = data.get('password')
 

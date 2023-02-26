@@ -1,10 +1,8 @@
-from user.models import User
+from user.models import *
 from .user_helpers import UserHelpers
-from datetime import datetime, timedelta
+from .user_session import UserSession
 import json
-import jwt
-JWT_ACCESS_TTL = 300 # seconds
-JWT_REFRESH_TTL = 3600 * 24 * 7
+
 class UserActivity():
     def login(data: json) -> User:
         _users = UserHelpers.find_user_by_email(data.get('email'))
@@ -15,29 +13,10 @@ class UserActivity():
         if not UserHelpers.check_password(_user, data.get('password')):
             return None
         
-        key = 'secret' # Разные для каждого пары?
-        access_token = jwt.encode({
-            'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_ACCESS_TTL),
-            'user_id': _user.id,
-            'user_info': UserHelpers.json_user(_user),
-            'type': 'access'
-        }, key)
-        # print(access_token)
-        # decoded = jwt.decode(access_token, key)
-        # print(decoded)
-
-        refresh_token = jwt.encode({
-            'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),
-            'user_id': _user.id,
-            'user_info': UserHelpers.json_user(_user),
-            'type': 'refresh'
-        }, key)
-        print(json.dumps({'tokens':{
-            'access': access_token,
-            'refresh': refresh_token
-        }}))
+        session = UserSession.create_session(user=_user)
+        # print (f"{session.user_id}, {session.start_date}, {session.start_time}")
+        # key = 'secret' # Разные для каждого пары?
+        
         # return json {'user_id', tokens{refresh, access}, user_info}
         return _user
 

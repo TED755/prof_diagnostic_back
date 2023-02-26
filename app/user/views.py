@@ -3,7 +3,7 @@ from django.http import HttpResponse
 # from .models import User
 from django.views.decorators.csrf import csrf_exempt
 import json
-from user.user_model.user_activity import UserActivity
+from user.user_model.user_activity import *
 
 # @csrf_exempt
 # def register(request):

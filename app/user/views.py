@@ -1,38 +1,36 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.http import HttpResponse
 # from .models import User
 from django.views.decorators.csrf import csrf_exempt
 import json
 from user.user_model.user_activity import *
+import jwt
 
-# @csrf_exempt
-# def register(request):
-#     try:
-#         data = json.loads(request.body.decode())
-#     except ValueError:
-#         return HttpResponse({
-#             'error': 'bla bla bla',
-#         })
+@csrf_exempt
+def register(request):
+    # try:
+    # data = json.loads(request.body.decode())
+    # except ValueError:
+    #     return HttpResponse({
+    #         'error': 'bla bla bla',
+    #     })
 
-#     print(data.get('email'))
-#     # activity = Activity(request)
-#     # activity.register_user()
-#     # activity.register_user()
-#     # print (activity)
-#     return HttpResponse(request, {'email': data.get('email'), 'password': data.get('password')})
+    # print(data.get('email'))
+    # activity = Activity(request)
+    # activity.register_user()
+    # activity.register_user()
+    # print (activity)
+    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)
 
 @csrf_exempt
 def login(request):
-    # right_email = 'test_user1@test.com'
-    # right_password = '123'
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-    except ValueError:
-        return HttpResponse({
-            'error': 'bla bla bla',
-        })
+    # try:
+    data = json.loads(request.body.decode('utf-8'))
+    # except ValueError:
+    #     return HttpResponse({
+    #         'error': 'bla bla bla',
+    #     })
 
-    # response: json {'status','erorr','user_id', tokens{refresh, access}, user_info}
     login_user = UserActivity.login(data)
 
     response = {
@@ -52,10 +50,21 @@ def login(request):
     # return HttpResponse(request, json.dumps({'status':'OK', 
     #     'data':{'name':login_user.name, 'email':login_user.email}, 'session':{}}))
 
+@csrf_exempt
+def refresh(request):
+    # try:
+    data = json.loads(request.body.decode('utf-8'))
+    # except ValueError:
+    #     return HttpResponse({
+    #         'error': 'bla bla bla',
+    #     })
+    token = data.get('refresh')
+    # print(token)
 
-    # email = data.get('email')
-    # password = data.get('password')
-
-    # if email == right_email and password == right_password:
-    #     return HttpResponse(request, json.dumps({'name':'Test User One', 'email':email, 'status':'OK'}))
-    # else: return HttpResponse(request, json.dumps({'email':email, 'error':'Invalid email or password'}))
+    try:
+        decoded_token = jwt.decode(token, 'Ij3q78Wm+yTs4hHtq7Xjw2bL1OW+YtFwGOLiC5jUCuk', algorithms='HS256')
+    except jwt.InvalidSignatureError:
+        print("LOH!")
+        # return error
+    print(decoded_token)
+    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)

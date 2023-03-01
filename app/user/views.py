@@ -35,9 +35,17 @@ def login(request):
     # response: json {'status','erorr','user_id', tokens{refresh, access}, user_info}
     login_user = UserActivity.login(data)
 
-    if login_user['message'] == 'Invalid email or password':
-        return HttpResponse(json.dumps(login_user), content_type="text/plain", charset='utf-8', status=401)
-    return HttpResponse(json.dumps(login_user), content_type="text/plain", charset='utf-8', status=201)
+    response = {
+        'message': login_user['message'],
+    }
+    if 'data' in login_user:
+        response['data'] = login_user['data']
+
+    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=login_user['status'])
+
+    # if login_user['message'] == 'Invalid email or password':
+    #     return HttpResponse(json.dumps(login_user), content_type="text/plain", charset='utf-8', status=401)
+    # return HttpResponse(json.dumps(login_user), content_type="text/plain", charset='utf-8', status=201)
 
     # if not login_user:
     #     return HttpResponse(request, json.dumps({'error':'Invalid email or password'}))

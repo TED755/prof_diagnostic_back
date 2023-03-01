@@ -27,7 +27,6 @@ DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -124,7 +123,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+JWT_ACCESS_TTL = 300 # seconds
 
+JWT_REFRESH_TTL = 3600 * 24 * 7
+
+SESSION_LIFETIME = 3600 * 24 * 30
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 

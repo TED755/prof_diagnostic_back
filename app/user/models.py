@@ -15,6 +15,5 @@ class User(models.Model):
 
 class ActiveSession(models.Model):
     user_id = models.IntegerField(blank=False)
-    access_token = models.CharField(max_length=500, blank=False)
-    refresh_token = models.CharField(max_length=500, blank=False)
-    started_at = models.DateTimeField(default=timezone.now)
+    expired = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(default=timezone.now, blank=True)

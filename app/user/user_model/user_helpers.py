@@ -1,13 +1,7 @@
 from user.models import User
 from datetime import datetime, timedelta
 import jwt
-import json
-from prof_diagnostic.settings import SECRET_KEY
-# import os
-
-JWT_ACCESS_TTL = 300 # seconds
-JWT_REFRESH_TTL = 3600 * 24 * 7
-JWT_SECRET_KEY = 'secret'
+from prof_diagnostic.settings import SECRET_KEY, JWT_REFRESH_TTL, JWT_ACCESS_TTL
 
 class UserHelpers():
     def crypt_password(password):

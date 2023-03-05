@@ -17,3 +17,6 @@ class ActiveSession(models.Model):
     user_id = models.IntegerField(blank=False)
     expired = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
+
+# class Diagnostic(models.Model):
+#     pass

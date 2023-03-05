@@ -11,7 +11,7 @@ class UserSession():
         session = ActiveSession(user_id = user.id, expired = timestamp + timedelta(seconds=SESSION_LIFETIME), created_at=timestamp)
     
         if not ActiveSession.objects.filter(user_id = user.id):
-            # session.save()
+            session.save()
             response = {
                 'status': 201,
                 'message': 'success'
@@ -27,5 +27,11 @@ class UserSession():
 
         return response
 
-    def end_session():
-        pass
+    def end_session(session_id: str):
+        sessions = ActiveSession.objects.filter(id = session_id)
+        if sessions:
+            close_session = sessions[0]
+            close_session.delete()
+            return True
+
+        return False

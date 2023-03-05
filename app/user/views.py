@@ -9,18 +9,23 @@ import jwt
 @csrf_exempt
 def register(request):
     # try:
-    # data = json.loads(request.body.decode())
+    data = json.loads(request.body.decode())
     # except ValueError:
     #     return HttpResponse({
     #         'error': 'bla bla bla',
     #     })
-
+    _response = UserActivity.register(data)
+    response = {
+        'message': _response['message'],
+    }
+    if 'data' in _response:
+        response['data'] = _response['data']
     # print(data.get('email'))
     # activity = Activity(request)
     # activity.register_user()
     # activity.register_user()
     # print (activity)
-    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)
+    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=_response['status'])
 
 @csrf_exempt
 def login(request):

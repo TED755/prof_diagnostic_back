@@ -8,7 +8,8 @@ class UserSession():
         # print (tokens)
         response = {}
         timestamp = timezone.now()
-        session = ActiveSession(user_id = user.id, expired = timestamp + timedelta(seconds=SESSION_LIFETIME), created_at=timestamp)
+        session = ActiveSession(user_id = user.id, expired = timestamp + timedelta(seconds=SESSION_LIFETIME), 
+                                created_at=timestamp)
     
         if not ActiveSession.objects.filter(user_id = user.id):
             session.save()

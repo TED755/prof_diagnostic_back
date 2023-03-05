@@ -1,6 +1,8 @@
 from user.models import *
+from diagnostic.models import *
 from .user_helpers import UserHelpers
 from .user_session import UserSession
+from diagnostic.diagnostic_model.diagnostic_activity import DiagnosticActivity
 from prof_diagnostic.settings import JWT_ACCESS_TTL, JWT_REFRESH_TTL, SECRET_KEY
 import json
 import jwt
@@ -68,9 +70,11 @@ class UserActivity():
         user_id = new_user['data']['user_id']
         _users = User.objects.filter(id = user_id)
         user = _users[0] # getting new user from db by id
-        
-        # create dignostic. Later
-       
+
+        new_diagnostic = DiagnosticActivity.create_diagnostic(user, data.get('diagnostic_type')) # create dignostic
+        if new_diagnostic['status'] == 401:
+            return {'status': new_diagnostic['status'], 'message': new_diagnostic['message']}
+
         new_session = UserSession.create_session(user) # create session
         if new_session['status'] == 208:
             return {'status': 400, 'message': 'Try uncorrect authorization'}

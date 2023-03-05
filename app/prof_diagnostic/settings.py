@@ -36,8 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'activity.apps.ActivityConfig',
     'user.apps.UserConfig',
+    'diagnostic.apps.DiagnosticConfig',
     'corsheaders',
 ]
 

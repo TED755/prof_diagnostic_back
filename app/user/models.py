@@ -19,4 +19,6 @@ class ActiveSession(models.Model):
     created_at = models.DateTimeField(default=timezone.now, blank=True)
 
 # class Diagnostic(models.Model):
-#     pass
+#     user_id = models.IntegerField(blank=False)
+#     diagnostic_type = models.TextField(default="standard", max_length=15, blank=False)
+#     answers = ArrayField(base_field=models.IntegerField(blank=True, default=0), size=45)

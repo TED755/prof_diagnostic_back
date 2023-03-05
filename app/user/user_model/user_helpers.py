@@ -31,22 +31,29 @@ class UserHelpers():
     def create_tokens(user: User):
         access_token = jwt.encode({
             'iss': 'backend-api',
-            'exp': JWT_ACCESS_TTL,
+            'exp': datetime.utcnow() + timedelta(seconds=JWT_ACCESS_TTL),
+            'iat': datetime.utcnow(),
             'user_id': user.id,
             'user_info': UserHelpers.user_info(user),
             'type': 'access'
-        }, SECRET_KEY)
+        }, SECRET_KEY, algorithm='HS256')
+        # print(access_token)
+        # print(jwt.decode(access_token, SECRET_KEY, algorithms='HS256'))
         # print(access_token)
         # decoded = jwt.decode(access_token, key)
         # print(decoded)
 
         refresh_token = jwt.encode({
             'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),
+            'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),#JWT_REFRESH_TTL,#
+            'iat': datetime.utcnow(),
             'user_id': user.id,
             'user_info': UserHelpers.user_info(user),
             'type': 'refresh'
-        }, SECRET_KEY)
+        }, SECRET_KEY, algorithm='HS256')
+
+        # print(refresh_token)
+        # print(jwt.decode(refresh_token, SECRET_KEY, algorithms='HS256'))
     
         return {
             'access': access_token,

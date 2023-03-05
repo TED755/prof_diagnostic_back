@@ -54,17 +54,18 @@ def login(request):
 def refresh(request):
     # try:
     data = json.loads(request.body.decode('utf-8'))
+    refresh = UserActivity.refresh_tokens(data)
+    # print(response)
+    response = {
+        'message': refresh['message']
+    }
+    if 'data' in  refresh:
+        response['data'] = refresh['data']
     # except ValueError:
     #     return HttpResponse({
     #         'error': 'bla bla bla',
     #     })
-    token = data.get('refresh')
-    # print(token)
-
-    try:
-        decoded_token = jwt.decode(token, 'Ij3q78Wm+yTs4hHtq7Xjw2bL1OW+YtFwGOLiC5jUCuk', algorithms='HS256')
-    except jwt.InvalidSignatureError:
-        print("LOH!")
+    
         # return error
-    print(decoded_token)
-    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)
+    # print(decoded_token)
+    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=refresh['status'])

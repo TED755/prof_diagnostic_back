@@ -33,8 +33,14 @@ class UserActivity():
             }
         if session['status'] == 208:
             response = {
-                'status': 208,
+                'status': 200,
                 'message': session['message'],
+                'data': {
+                    'access': tokens['access'],
+                    'refresh': tokens['refresh'],
+                    'refresh_access_in': JWT_ACCESS_TTL,
+                    'refresh_in': JWT_REFRESH_TTL
+                }
             }
         return response
 

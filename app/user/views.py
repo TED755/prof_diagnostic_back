@@ -15,9 +15,7 @@ def register(request):
     #         'error': 'bla bla bla',
     #     })
     _response = UserActivity.register(data)
-    response = {
-        'message': _response['message'],
-    }
+    response = {}
     if 'data' in _response:
         response['data'] = _response['data']
     # print(data.get('email'))
@@ -38,9 +36,7 @@ def login(request):
 
     login_user = UserActivity.login(data)
 
-    response = {
-        'message': login_user['message'],
-    }
+    response = {}
     if 'data' in login_user:
         response['data'] = login_user['data']
 
@@ -61,9 +57,10 @@ def refresh(request):
     data = json.loads(request.body.decode('utf-8'))
     refresh = UserActivity.refresh_tokens(data)
     # print(response)
-    response = {
-        'message': refresh['message']
-    }
+    response = {}
+    # response = {
+    #     'message': refresh['message']
+    # }
     if 'data' in  refresh:
         response['data'] = refresh['data']
     # except ValueError:

@@ -34,7 +34,6 @@ class UserHelpers():
             'iss': 'backend-api',
             'exp': datetime.utcnow() + timedelta(seconds=JWT_ACCESS_TTL),
             'iat': datetime.utcnow(),
-            'user_id': user.id,
             'user_info': UserHelpers.user_info(user),
             'type': 'access'
         }, SECRET_KEY, algorithm='HS256')
@@ -48,7 +47,6 @@ class UserHelpers():
             'iss': 'backend-api',
             'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),#JWT_REFRESH_TTL,#
             'iat': datetime.utcnow(),
-            'user_id': user.id,
             'user_info': UserHelpers.user_info(user),
             'type': 'refresh'
         }, SECRET_KEY, algorithm='HS256')

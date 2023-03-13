@@ -54,7 +54,7 @@ class UserActivity():
             UserSession.end_session(data.get('session_id'))
             return {'status': 403, 'message': 'Signature has expired'}
 
-        users = User.objects.filter(id = decoded_token['user_id'])
+        users = User.objects.filter(id = decoded_token['user_info']['user_id'])
         if not users:
             return {'status': 404, 'message': 'User id not found'}
 

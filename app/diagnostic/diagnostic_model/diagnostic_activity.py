@@ -1,5 +1,6 @@
 from user.models import *
 from diagnostic.models import *
+from .diagnostic_result import *
 import json
 
 class DiagnosticActivity():
@@ -13,9 +14,31 @@ class DiagnosticActivity():
             started = timezone.now())
         diagnostic.save()
         return {'status': 201, 'message': 'succes'}
-        
+    
+    def save_progress(user_id: str, diagnostic_type: str, answers: list):
+        diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = 'dppsh')
+
+        if not diagnostics:
+            return {'status': 401, 'message':'Diagnotic not found'}
+
+        diagnostic = diagnostics[0]
+
+        if diagnostic.ended:
+            return {'status': 200, 'message':'Diagnostic was ended yet'}
+
+        diagnostic.answers = answers
+        diagnostic.save
+
+        return {'status':201, 'message':'success'}
+
+
     def get_diagnostic(user_id: str, diagnostic_type: str):
         pass
 
-    def get_results(user_id: str):
+    def get_results(user_id: str, diagnostic_type: str, data: json):
+        results = DiagnosticResult(diagnostic_type=diagnostic_type, answers=[0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1])
+        results.count_competence_lvl()
+        results.find_recomendations_dpo()
+
+    def start_diagnostic(user_id: str):
         pass

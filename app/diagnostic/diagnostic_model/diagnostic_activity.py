@@ -33,8 +33,14 @@ class DiagnosticActivity():
 
 
     def get_diagnostic(user_id: str, diagnostic_type: str):
+        diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
 
-        pass
+        if not diagnostics:
+            return {'status': 401, 'message':'Diagnotic not found'}
+
+        diagnostic = diagnostics[0]
+        
+        return {'status': 200, 'message':'Success', 'data':diagnostic.diagnostic_info()}
 
     def get_results(user_id: str, diagnostic_type: str, data: json):
         results = DiagnosticResult(diagnostic_type=diagnostic_type, answers=[0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1])

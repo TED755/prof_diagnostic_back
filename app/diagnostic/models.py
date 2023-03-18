@@ -15,7 +15,7 @@ class Diagnostic(models.Model):
             'id': self.id,
             'user_id': self.user_id,
             'diagnostic_type': self.diagnostic_type,
-            'started': self.started,
-            'ended': self.ended,
+            'started': self.started.ctime(),
+            'ended': self.ended.ctime() if self.ended else '',
             'answers': self.answers
         }

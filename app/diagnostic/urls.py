@@ -3,5 +3,6 @@ from . import views
 
 urlpatterns = [
     # path('diagnostic/start', views.start),
+    path('diagnostic/save_progress', views.save_progress)
 
 ]

@@ -16,7 +16,7 @@ class DiagnosticActivity():
         return {'status': 201, 'message': 'succes'}
     
     def save_progress(user_id: str, diagnostic_type: str, answers: list):
-        diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = 'dppsh')
+        diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
 
         if not diagnostics:
             return {'status': 401, 'message':'Diagnotic not found'}
@@ -27,7 +27,7 @@ class DiagnosticActivity():
             return {'status': 200, 'message':'Diagnostic was ended yet'}
 
         diagnostic.answers = answers
-        diagnostic.save
+        diagnostic.save()
 
         return {'status':201, 'message':'success'}
 

@@ -1,6 +1,4 @@
 from user.models import User
-from datetime import datetime, timedelta
-import jwt
 from prof_diagnostic.settings import SECRET_KEY, JWT_REFRESH_TTL, JWT_ACCESS_TTL
 
 class UserHelpers():
@@ -28,36 +26,6 @@ class UserHelpers():
                 'school': user.school,
                 'locality_type': user.locality_type
             }
-
-    def create_tokens(user: User):
-        access_token = jwt.encode({
-            'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_ACCESS_TTL),
-            'iat': datetime.utcnow(),
-            'user_info': UserHelpers.user_info(user),
-            'type': 'access'
-        }, SECRET_KEY, algorithm='HS256')
-        # print(access_token)
-        # print(jwt.decode(access_token, SECRET_KEY, algorithms='HS256'))
-        # print(access_token)
-        # decoded = jwt.decode(access_token, key)
-        # print(decoded)
-
-        refresh_token = jwt.encode({
-            'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),#JWT_REFRESH_TTL,#
-            'iat': datetime.utcnow(),
-            'user_info': UserHelpers.user_info(user),
-            'type': 'refresh'
-        }, SECRET_KEY, algorithm='HS256')
-
-        # print(refresh_token)
-        # print(jwt.decode(refresh_token, SECRET_KEY, algorithms='HS256'))
-    
-        return {
-            'access': access_token,
-            'refresh': refresh_token
-        }
 
     def create_user(data):
         if (not data.get('name') or 

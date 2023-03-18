@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from user.user_model.user_activity import *
-import jwt
 
 @csrf_exempt
 def register(request):

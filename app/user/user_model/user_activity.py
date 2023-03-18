@@ -18,7 +18,7 @@ class UserActivity():
             return {'status':401, 'message':'Invalid email or password'}
         
         session = UserSession.create_session(user=_user)
-        tokens = UserHelpers.create_tokens(user=_user)
+        tokens = UserSession.create_tokens(user=_user)
 
         if session['status'] == 201:
             response = {
@@ -58,7 +58,7 @@ class UserActivity():
         if not users:
             return {'status': 404, 'message': 'User id not found'}
 
-        tokens = UserHelpers.create_tokens(users[0])
+        tokens = UserSession.create_tokens(users[0])
         return {'status': 201, 'message':'OK', 'data':{'access': tokens['access']}}
 
     def register(data: json)->hash:
@@ -85,7 +85,7 @@ class UserActivity():
         if new_session['status'] == 208:
             return {'status': 400, 'message': 'Try uncorrect authorization'}
 
-        tokens = UserHelpers.create_tokens(user) # create tokens
+        tokens = UserSession.create_tokens(user) # create tokens
 
         return {
             'status': 201,

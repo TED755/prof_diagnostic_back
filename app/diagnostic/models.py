@@ -9,3 +9,13 @@ class Diagnostic(models.Model):
     started = models.DateTimeField(default=timezone.now, blank=True)
     ended = models.DateTimeField(blank=True, null=True)
     answers = ArrayField(base_field=models.IntegerField(blank=True, default=0, null=True), size=45, null=True)
+
+    def diagnostic_info(self)->hash:
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'diagnostic_type': self.diagnostic_type,
+            'started': self.started,
+            'ended': self.ended,
+            'answers': self.answers
+        }

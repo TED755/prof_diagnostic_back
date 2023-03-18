@@ -13,19 +13,20 @@ class UserHelpers():
     def check_password(user: User, password):
         return UserHelpers.decrypt_password(user.password) == password
 
-    def user_info(user: User):
-        return {
-                'user_id': user.id,
-                'email': user.email,
-                'name': user.name,
-                'category': user.category,
-                'teaching_exp': user.teaching_exp,
-                'position': user.position,
-                'raion': user.raion,
-                'region_rf': user.region_rf,
-                'school': user.school,
-                'locality_type': user.locality_type
-            }
+    # @depricated
+    # def user_info(user: User):
+    #     return {
+    #             'user_id': user.id,
+    #             'email': user.email,
+    #             'name': user.name,
+    #             'category': user.category,
+    #             'teaching_exp': user.teaching_exp,
+    #             'position': user.position,
+    #             'raion': user.raion,
+    #             'region_rf': user.region_rf,
+    #             'school': user.school,
+    #             'locality_type': user.locality_type
+    #         }
 
     def create_user(data):
         if (not data.get('name') or 

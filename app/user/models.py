@@ -13,6 +13,20 @@ class User(models.Model):
     school = models.TextField(max_length=50, blank=True)
     locality_type = models.TextField(max_length=50, blank=True)
 
+    def user_info(self)->hash:
+        return {
+            'user_id': self.id,
+            'email': self.email,
+            'name': self.name,
+            'category': self.category,
+            'teaching_exp': self.teaching_exp,
+            'position': self.position,
+            'raion': self.raion,
+            'region_rf': self.region_rf,
+            'school': self.school,
+            'locality_type': self.locality_type
+        }
+
 class ActiveSession(models.Model):
     user_id = models.IntegerField(blank=False)
     expired = models.DateTimeField(default=timezone.now)

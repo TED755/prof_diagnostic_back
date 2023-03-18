@@ -44,7 +44,7 @@ class UserSession():
             'iss': 'backend-api',
             'exp': datetime.utcnow() + timedelta(seconds=JWT_ACCESS_TTL),
             'iat': datetime.utcnow(),
-            'user_info': UserHelpers.user_info(user),
+            'user_info': user.user_info(),
             'type': 'access'
         }, SECRET_KEY, algorithm='HS256')
         # print(access_token)
@@ -57,7 +57,7 @@ class UserSession():
             'iss': 'backend-api',
             'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),#JWT_REFRESH_TTL,#
             'iat': datetime.utcnow(),
-            'user_info': UserHelpers.user_info(user),
+            'user_info': user.user_info(),
             'type': 'refresh'
         }, SECRET_KEY, algorithm='HS256')
 

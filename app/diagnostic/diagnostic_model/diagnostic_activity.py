@@ -33,6 +33,7 @@ class DiagnosticActivity():
 
 
     def get_diagnostic(user_id: str, diagnostic_type: str):
+
         pass
 
     def get_results(user_id: str, diagnostic_type: str, data: json):

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from user.user_model.user_session import *
 from .diagnostic_model.diagnostic_activity import *
+from .diagnostic_model.diagnostic_helpers import *
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import json
@@ -40,3 +41,19 @@ def get_diagnostic(request):
             content_type="text/plain", charset='utf-8', status=500)
 
     return HttpResponse(json.dumps(response['data']), content_type="text/plain", charset='utf-8', status=response['status'])
+
+@csrf_exempt
+def load_recomendations(request):
+    data = json.loads(request.body.decode())
+
+    token = UserSession.decode_token(data.get('access'))
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    email = token['user_info']['email']
+    if email != 'develop@admin.com':
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=403)
+
+    result = DiagnosticHelpers.load_recomendations_to_db(data.get('file_name'), data.get('diagnostic_type'))
+
+    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)

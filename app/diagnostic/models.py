@@ -19,3 +19,13 @@ class Diagnostic(models.Model):
             'ended': self.ended.ctime() if self.ended else '',
             'answers': self.answers
         }
+
+class Recomendation(models.Model):
+    index = models.IntegerField()
+    diagnostic_type = models.TextField(default="standard", max_length=15, blank=False)
+    level_1 = models.TextField(default='', blank=False)
+    level_2 = models.TextField(default='', blank=False)
+    level_3 = models.TextField(default='', blank=False)
+
+    def __str__(self):
+        return f"{self.id}, {self.index}, {self.diagnostic_type}, {self.level_1}, {self.level_2}, {self.level_3}"

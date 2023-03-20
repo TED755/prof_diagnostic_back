@@ -47,4 +47,4 @@ class UserHelpers():
         )
 
         user.save()
-        return {'status':201, 'message':'success', 'data':UserHelpers.user_info(user)}
+        return {'status':201, 'message':'success', 'data':user.user_info()}

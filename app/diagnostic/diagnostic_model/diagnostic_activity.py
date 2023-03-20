@@ -1,6 +1,7 @@
 from user.models import *
 from diagnostic.models import *
 from .diagnostic_result import *
+from .diagnostic_helpers import *
 import json
 
 class DiagnosticActivity():
@@ -49,3 +50,6 @@ class DiagnosticActivity():
 
     def start_diagnostic(user_id: str):
         pass
+
+    def load_recomendations(file_name: str):
+        result = DiagnosticHelpers.load_recomendations_to_db(file_name=file_name)

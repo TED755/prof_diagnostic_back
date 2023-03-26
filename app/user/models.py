@@ -32,7 +32,20 @@ class ActiveSession(models.Model):
     expired = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
 
-# class Diagnostic(models.Model):
-#     user_id = models.IntegerField(blank=False)
-#     diagnostic_type = models.TextField(default="standard", max_length=15, blank=False)
-#     answers = ArrayField(base_field=models.IntegerField(blank=True, default=0), size=45)
+class Recomendation(models.Model):
+    user_id = models.IntegerField(blank=False)
+    diagnostic_type = models.TextField(default="standard", max_length=15, blank=False)
+    index = models.IntegerField(blank=False)
+    competence_lvl = models.TextField(max_length=15, blank=True)
+    recomendation = models.TextField(default='', blank=False)
+    growpoint = models.TextField(default="standard", max_length=15, blank=False)
+
+    def recomendation_info(self):
+        return{
+            'user_id': self.user_id,
+            'diagnostic_type': self.diagnostic_type,
+            'index':self.index,
+            'competence_lvl':self.competence_lvl,
+            'recomendation':self.recomendation,
+            'growpoint':self.growpoint
+        }

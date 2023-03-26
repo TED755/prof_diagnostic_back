@@ -1,27 +1,82 @@
-# def main():
-#     d = DiagnosticResult('dppsh', [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1])
-#     d.count_competence_lvl()
-#     print(d.competence_lvl)
-#     print(list(d.competence_lvl.keys())[0])
+from diagnostic.models import Recomendation as rec
+from user.models import Recomendation as user_rec
 
 class DiagnosticResult():
-    def __init__(self, diagnostic_type: str, answers: list):
+    def __init__(self, user_id: str, diagnostic_type: str, answers: list):
+        if len(answers) < 45:
+            return {'Not end diagnostic'}
+        self.user_id = user_id
         self.diagnostic_type = diagnostic_type
-        self.ansewrs = answers
-        self.competence_lvl = {}
+        self.answers = answers
+        self.competence_lvl = ''
+        self.recomendations = []
 
     def count_competence_lvl(self):
-        if len(self.ansewrs) < 45:
-            return {'Not end diagnostic'}
-        competence_count = len(self.ansewrs) - self.ansewrs.count(0)
+        competence_count = len(self.answers) - self.answers.count(0)
         if  competence_count in range(0, 10):
-            self.competence_lvl= {1: 'ниже базового'}
+            self.competence_lvl = 'ниже базового'
         if competence_count in range (10, 21):
-            self.competence_lvl= {2: 'базовый'}
+            self.competence_lvl = 'базовый'
         if competence_count in range (21, 45):
-            self.competence_lvl= {3: 'достаточный'}
+            self.competence_lvl = 'достаточный'
         if competence_count == 45:
-            self.competence_lvl= {4: 'высокий'}
+            self.competence_lvl = 'высокий'
+
+    def get_competence_lvl(self):
+        competence_count = len(self.answers) - self.answers.count(0)
+        if  competence_count in range(0, 10):
+            return 1
+        if competence_count in range (10, 21):
+            return 2
+        if competence_count in range (21, 45):
+            return 3
+        if competence_count == 45:
+            return 4
 
     def find_recomendations_dpo(self):
-        pass
+        recomendations = rec.objects.filter(diagnostic_type=self.diagnostic_type).order_by('id')
+        # print(f"rec len: {len(recomendations)}")
+        if not recomendations:
+            return {'status': 500, 'message':'Internal server error. Recomendations reading failed'}
+
+        # competence_count = len(self.ansewrs) - self.ansewrs.count(0)
+        # user_recomendations = []
+        user_recomendation = ''
+        growpoint = ''
+        
+        for index, answer in enumerate(self.answers):
+            # print("-------")
+            # print(f'Index: {index + 1}')
+            # print(f'Answer: {answer}')
+            if answer == 0:
+                recomendation = recomendations[index]
+                # print(f'Rec index: {recomendation.index}')
+                # print(f"Rec: {recomendation.level_1}")
+                if self.get_competence_lvl() == 1:
+                    user_recomendation = recomendation.level_1
+                elif self.get_competence_lvl() == 2:
+                    user_recomendation = recomendation.level_2
+                elif self.get_competence_lvl() == 3:
+                    user_recomendation = recomendation.level_3
+
+                if recomendation.competence_lvl < self.get_competence_lvl():
+                    growpoint = 'Дефицит'
+                else:
+                    growpoint = 'Перспектива'
+
+                user_rec(user_id=self.user_id, diagnostic_type=self.diagnostic_type, 
+                    index=index + 1, competence_lvl=self.competence_lvl, 
+                    recomendation=user_recomendation, growpoint=growpoint).save()
+                # self.recomendations.append()
+
+        #         # print("__")
+                # print(self.recomendations.pop())
+
+        # for ur in self.recomendations:
+        #     ur.save()
+
+        # for rec in self.recomendations:
+            # print(f"recomendations for saving to db: {rec.recomendation_info()}")
+        # save recomedations to db
+
+        

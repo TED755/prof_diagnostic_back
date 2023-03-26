@@ -23,6 +23,7 @@ class Diagnostic(models.Model):
 class Recomendation(models.Model):
     index = models.IntegerField()
     diagnostic_type = models.TextField(default="standard", max_length=15, blank=False)
+    competence_lvl = models.IntegerField(default=1)
     level_1 = models.TextField(default='', blank=False)
     level_2 = models.TextField(default='', blank=False)
     level_3 = models.TextField(default='', blank=False)

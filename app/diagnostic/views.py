@@ -57,3 +57,16 @@ def load_recomendations(request):
     result = DiagnosticHelpers.load_recomendations_to_db(data.get('file_name'), data.get('diagnostic_type'))
 
     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)
+
+@csrf_exempt
+def get_results(request):
+    data = json.loads(request.body.decode())
+
+    token = UserSession.decode_token(data.get('access'))
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], 
+        diagnostic_type=data.get('diagnostic_type'), answers=data.get('answers'))
+
+    return HttpResponse({})

@@ -17,11 +17,7 @@ def register(request):
     response = {}
     if 'data' in _response:
         response['data'] = _response['data']
-    # print(data.get('email'))
-    # activity = Activity(request)
-    # activity.register_user()
-    # activity.register_user()
-    # print (activity)
+
     return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=_response['status'])
 
 @csrf_exempt
@@ -41,15 +37,6 @@ def login(request):
 
     return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=login_user['status'])
 
-    # if login_user['message'] == 'Invalid email or password':
-    #     return HttpResponse(json.dumps(login_user), content_type="text/plain", charset='utf-8', status=401)
-    # return HttpResponse(json.dumps(login_user), content_type="text/plain", charset='utf-8', status=201)
-
-    # if not login_user:
-    #     return HttpResponse(request, json.dumps({'error':'Invalid email or password'}))
-    # return HttpResponse(request, json.dumps({'status':'OK', 
-    #     'data':{'name':login_user.name, 'email':login_user.email}, 'session':{}}))
-
 @csrf_exempt
 def refresh(request):
     # try:
@@ -67,6 +54,4 @@ def refresh(request):
     #         'error': 'bla bla bla',
     #     })
     
-        # return error
-    # print(decoded_token)
     return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=refresh['status'])

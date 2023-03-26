@@ -4,8 +4,6 @@ import os
 
 class DiagnosticHelpers():
     def load_recomendations_to_db(file_name: str, diagnostic_type: str):
-        # print(file_name)
-
         if not os.path.exists(file_name):
             print(404)
             return {'status': 404, 'message':'File not found'}

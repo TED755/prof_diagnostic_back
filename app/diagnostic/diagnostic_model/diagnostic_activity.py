@@ -54,7 +54,6 @@ class DiagnosticActivity():
 
         if not diagnostic_type:
             results = user_rec.objects.filter(user_id = user_id)
-            # return {'status':200, 'data':results}
         else:
             results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
 
@@ -71,14 +70,6 @@ class DiagnosticActivity():
                 user_recomendations.append(res.recomendation_info())
 
         return {'status':200, 'data':user_recomendations}
-            
-
-            # for res in results:
-            #     user_recomendations.append(res.recomendation_info())
-
-            # return {'status':200, 'data':user_recomendations}
-
-            # return {'status':201, 'data':results}
             
 
     def count_results(user_id: str, diagnostic_type: str, answers: list):

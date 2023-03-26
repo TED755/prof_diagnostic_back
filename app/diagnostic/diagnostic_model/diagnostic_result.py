@@ -35,23 +35,17 @@ class DiagnosticResult():
 
     def find_recomendations_dpo(self):
         recomendations = rec.objects.filter(diagnostic_type=self.diagnostic_type).order_by('id')
-        # print(f"rec len: {len(recomendations)}")
+
         if not recomendations:
             return {'status': 500, 'message':'Internal server error. Recomendations reading failed'}
 
-        # competence_count = len(self.ansewrs) - self.ansewrs.count(0)
-        # user_recomendations = []
         user_recomendation = ''
         growpoint = ''
         
         for index, answer in enumerate(self.answers):
-            # print("-------")
-            # print(f'Index: {index + 1}')
-            # print(f'Answer: {answer}')
             if answer == 0:
                 recomendation = recomendations[index]
-                # print(f'Rec index: {recomendation.index}')
-                # print(f"Rec: {recomendation.level_1}")
+
                 if self.get_competence_lvl() == 1:
                     user_recomendation = recomendation.level_1
                 elif self.get_competence_lvl() == 2:
@@ -66,17 +60,4 @@ class DiagnosticResult():
 
                 user_rec(user_id=self.user_id, diagnostic_type=self.diagnostic_type, 
                     index=index + 1, competence_lvl=self.competence_lvl, 
-                    recomendation=user_recomendation, growpoint=growpoint).save()
-                # self.recomendations.append()
-
-        #         # print("__")
-                # print(self.recomendations.pop())
-
-        # for ur in self.recomendations:
-        #     ur.save()
-
-        # for rec in self.recomendations:
-            # print(f"recomendations for saving to db: {rec.recomendation_info()}")
-        # save recomedations to db
-
-        
+                    recomendation=user_recomendation, growpoint=growpoint).save()     

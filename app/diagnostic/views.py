@@ -69,4 +69,9 @@ def get_results(request):
     result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], 
         diagnostic_type=data.get('diagnostic_type'), answers=data.get('answers'))
 
-    return HttpResponse({})
+    response = {}
+    if 'data' in result:
+        response['data'] = result['data']
+
+    return HttpResponse(json.dumps(response,ensure_ascii=False), 
+        content_type="text/plain", charset='utf-8', status=result['status'])

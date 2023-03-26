@@ -45,7 +45,7 @@ class DiagnosticActivity():
         return {'status': 200, 'message':'Success', 'data':diagnostic.diagnostic_info()}
 
     def get_results(user_id: str, diagnostic_type: str, answers: list):
-        # answers=[0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1]
+        user_recomendations = []
         if not (user_id and answers):
             return {'status':401, 'message':'Invalid parameters given'}
 
@@ -54,31 +54,37 @@ class DiagnosticActivity():
 
         if not diagnostic_type:
             results = user_rec.objects.filter(user_id = user_id)
-            # return response
+            # return {'status':200, 'data':results}
         else:
             results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
 
-        if results:
-            result = results[0]
-            # return response
-        else:
+        if not results:
             if not diagnostic_type:
                 return {'status':401, 'message': 'Diagnostic type expected'}
             DiagnosticActivity.count_results(user_id = user_id, diagnostic_type=diagnostic_type, answers=answers)
             results = user_rec.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
-            for res in results:
-                print(res.recomendation_info())
-            # return response
-        
-        return {'status':200}
+
+            if not results:
+                return {'status':500, 'message':'Internal server error'}
+                
+        for res in results:
+                user_recomendations.append(res.recomendation_info())
+
+        return {'status':200, 'data':user_recomendations}
+            
+
+            # for res in results:
+            #     user_recomendations.append(res.recomendation_info())
+
+            # return {'status':200, 'data':user_recomendations}
+
+            # return {'status':201, 'data':results}
             
 
     def count_results(user_id: str, diagnostic_type: str, answers: list):
         results = DiagnosticResult(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
         results.count_competence_lvl()
         results.find_recomendations_dpo()
-
-        # print(results.recomendations)
 
 
     def start_diagnostic(user_id: str):

@@ -75,3 +75,20 @@ def get_results(request):
 
     return HttpResponse(json.dumps(response,ensure_ascii=False), 
         content_type="text/plain", charset='utf-8', status=result['status'])
+
+@csrf_exempt
+def get_questions(request):
+    data = json.loads(request.body.decode())
+
+    token = UserSession.decode_token(data.get('access'))
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    questions = DiagnosticActivity.get_questions(data.get('diagnostic_type'))
+    response = {}
+    if 'data' in questions:
+        response['data'] = questions['data']
+    else:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+        
+    return HttpResponse(json.dumps(response,ensure_ascii=False), content_type="text/plain", charset='utf-8', status=questions['status'])

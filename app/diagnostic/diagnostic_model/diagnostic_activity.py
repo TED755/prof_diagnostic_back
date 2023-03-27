@@ -83,3 +83,11 @@ class DiagnosticActivity():
 
     def load_recomendations(file_name: str):
         result = DiagnosticHelpers.load_recomendations_to_db(file_name=file_name)
+
+    def get_questions(diagnostic_type: str):
+        if not diagnostic_type:
+            return {'status':401, 'message': 'Diagnostic type expected'}
+        questions = DiagnosticHelpers.read_quetions(diagnostic_type=diagnostic_type)
+        return {'status':200, 'data':questions}
+        # print(questions)
+        

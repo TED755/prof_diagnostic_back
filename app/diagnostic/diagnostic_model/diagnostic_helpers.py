@@ -31,6 +31,20 @@ class DiagnosticHelpers():
         questions = read_data[diagnostic_type]
         # fh.close()
         return questions
-            
 
+    def generate_results(results_list: list)->hash:
+        # настроить динамичное получение типов дигностики
 
+        gen_results = {
+            'standard':[],
+            'dppsh':[],
+            'competence':''
+        }
+        for res in results_list:
+            if res.diagnostic_type not in gen_results:
+                gen_results[res.diagnostic_type] = []
+            gen_results[res.diagnostic_type].append(res.hash_recomendation())
+                
+
+        gen_results['competence'] = results_list[0].competence_lvl
+        return gen_results

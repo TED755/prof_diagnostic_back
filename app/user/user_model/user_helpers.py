@@ -1,5 +1,4 @@
 from user.models import User
-from prof_diagnostic.settings import SECRET_KEY, JWT_REFRESH_TTL, JWT_ACCESS_TTL
 
 class UserHelpers():
     def crypt_password(password):

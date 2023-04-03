@@ -44,17 +44,17 @@ class UserActivity():
             }
         return response
 
-    def refresh_tokens(data: json) -> hash:
-        token = data.get('refresh')
-        try:
-            decoded_token = jwt.decode(str(token), SECRET_KEY, algorithms=["HS256"])
-        except jwt.InvalidSignatureError:
-            return {'status': 403, 'message': 'Not valid token'}
-        except jwt.exceptions.ExpiredSignatureError:
-            UserSession.end_session(data.get('session_id'))
-            return {'status': 403, 'message': 'Signature has expired'}
+    def refresh_tokens(refresh: str) -> hash:
+        # token = refresh
+        # try:
+        #     decoded_token = jwt.decode(str(token), SECRET_KEY, algorithms=["HS256"])
+        # except jwt.InvalidSignatureError:
+        #     return {'status': 403, 'message': 'Not valid token'}
+        # except jwt.exceptions.ExpiredSignatureError:
+        #     UserSession.end_session(session_id)
+        #     return {'status': 403, 'message': 'Signature has expired'}
 
-        users = User.objects.filter(id = decoded_token['user_info']['user_id'])
+        users = User.objects.filter(id = refresh['user_info']['user_id'])
         if not users:
             return {'status': 404, 'message': 'User id not found'}
 
@@ -98,5 +98,6 @@ class UserActivity():
             }
         }
 
-    
+    def user_profile(user_id: str):
+        pass
     

@@ -41,11 +41,18 @@ class Recomendation(models.Model):
     growpoint = models.TextField(default="standard", max_length=15, blank=False)
 
     def recomendation_info(self):
-        return{
+        return {
             'user_id': self.user_id,
             'diagnostic_type': self.diagnostic_type,
             'index':self.index,
             'competence_lvl':self.competence_lvl,
+            'recomendation':self.recomendation,
+            'growpoint':self.growpoint
+        }
+
+    def hash_recomendation(self):
+        return {
+            'index':self.index,
             'recomendation':self.recomendation,
             'growpoint':self.growpoint
         }

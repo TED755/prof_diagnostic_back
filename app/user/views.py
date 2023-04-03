@@ -7,12 +7,12 @@ from user.user_model.user_activity import *
 
 @csrf_exempt
 def register(request):
-    # try:
-    data = json.loads(request.body.decode())
-    # except ValueError:
-    #     return HttpResponse({
-    #         'error': 'bla bla bla',
-    #     })
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+
     _response = UserActivity.register(data)
     response = {}
     if 'data' in _response:
@@ -22,12 +22,11 @@ def register(request):
 
 @csrf_exempt
 def login(request):
-    # try:
-    data = json.loads(request.body.decode('utf-8'))
-    # except ValueError:
-    #     return HttpResponse({
-    #         'error': 'bla bla bla',
-    #     })
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
 
     login_user = UserActivity.login(data)
 
@@ -39,19 +38,32 @@ def login(request):
 
 @csrf_exempt
 def refresh(request):
-    # try:
-    data = json.loads(request.body.decode('utf-8'))
-    refresh = UserActivity.refresh_tokens(data)
-    # print(response)
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    refresh = UserActivity.refresh_tokens(token)
+
     response = {}
-    # response = {
-    #     'message': refresh['message']
-    # }
+
     if 'data' in  refresh:
         response['data'] = refresh['data']
-    # except ValueError:
-    #     return HttpResponse({
-    #         'error': 'bla bla bla',
-    #     })
     
     return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=refresh['status'])
+
+# @csrf_exempt
+# def profile(request):
+#     try:
+#         data = json.loads(request.body.decode('utf-8'))
+#     except ValueError:
+#         return HttpResponse(
+#             json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+        
+#     token = UserSession.decode_token(data.get('access'))
+
+#     if 'status' in token:
+#         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    

@@ -8,11 +8,17 @@ import json
 
 @csrf_exempt
 def save_progress(request):
-    data = json.loads(request.body.decode())
-
-    token = UserSession.decode_token(data.get('access'))
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
 
     # print(token)
     response = DiagnosticActivity.save_progress(user_id=token['user_info']['user_id'], 
@@ -26,49 +32,71 @@ def save_progress(request):
 
 @csrf_exempt
 def get_diagnostic(request):
-    data = json.loads(request.body.decode())
-    response = {}
-
-    token = UserSession.decode_token(data.get('access'))
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
 
-    response = DiagnosticActivity.get_diagnostic(user_id=token['user_info']['user_id'], 
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+
+    response = {}
+
+    diagnostic = DiagnosticActivity.get_diagnostic(user_id=token['user_info']['user_id'], 
         diagnostic_type=data.get('diagnostic_type'))
 
-    if 'status' not in response:
+    if 'status' not in diagnostic:
         return HttpResponse(json.dumps({'message':'Internal server error'}), 
             content_type="text/plain", charset='utf-8', status=500)
 
-    return HttpResponse(json.dumps(response['data']), content_type="text/plain", charset='utf-8', status=response['status'])
+    if 'data' in diagnostic:
+        response['data'] = diagnostic['data']
+
+    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=diagnostic['status'])
 
 @csrf_exempt
 def load_recomendations(request):
-    data = json.loads(request.body.decode())
+    # data = json.loads(request.body.decode())
 
-    token = UserSession.decode_token(data.get('access'))
-    if 'status' in token:
-        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+    # token = UserSession.decode_token(data.get('access'))
+    # if 'status' in token:
+    #     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
 
-    email = token['user_info']['email']
-    if email != 'develop@admin.com':
-        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=403)
+    # email = token['user_info']['email']
+    # if email != 'develop@admin.com':
+    #     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=403)
 
-    result = DiagnosticHelpers.load_recomendations_to_db(data.get('file_name'), data.get('diagnostic_type'))
+    # result = DiagnosticHelpers.load_recomendations_to_db(data.get('file_name'), data.get('diagnostic_type'))
 
-    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=200)
+    return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=403)
 
 @csrf_exempt
 def get_results(request):
-    data = json.loads(request.body.decode())
-
-    token = UserSession.decode_token(data.get('access'))
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
 
-    result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], 
-        diagnostic_type=data.get('diagnostic_type'), answers=data.get('answers'))
+    if request.method == 'GET':
+        result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'])
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+        except ValueError:
+            return HttpResponse(
+                json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
 
+        result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], 
+        diagnostic_type=data.get('diagnostic_type'), answers=data.get('answers'))
+    else:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=400)
+
+    
     response = {}
     if 'data' in result:
         response['data'] = result['data']
@@ -78,11 +106,17 @@ def get_results(request):
 
 @csrf_exempt
 def get_questions(request):
-    data = json.loads(request.body.decode())
-
-    token = UserSession.decode_token(data.get('access'))
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
 
     questions = DiagnosticActivity.get_questions(data.get('diagnostic_type'))
     response = {}

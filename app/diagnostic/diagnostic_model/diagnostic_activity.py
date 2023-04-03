@@ -44,18 +44,32 @@ class DiagnosticActivity():
         
         return {'status': 200, 'message':'Success', 'data':diagnostic.diagnostic_info()}
 
-    def get_results(user_id: str, diagnostic_type: str, answers: list):
-        user_recomendations = []
-        if not (user_id and answers):
-            return {'status':401, 'message':'Invalid parameters given'}
+    def get_results(user_id: str, diagnostic_type='', answers=[]):
+        user_recomendations = {}
+        if not user_id:
+            return {'status':400, 'message':'Invalid parameters given'}
+
+        if not (diagnostic_type and answers):
+            results = user_rec.objects.filter(user_id = user_id)
+            if not results:
+                return {'status': 425, 'message':'Diagnostic not ended'}
+            user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
+            
+            # print(user_recomendations)
+            # for res in results:
+            #     user_recomendations.append(res.recomendation_info())
+
+            return {'status':200, 'data':user_recomendations}
+            
 
         if len(answers) < 45:
-            return {'status': 401, 'message':'Diagnostic not ended'}
+            return {'status': 425, 'message':'Diagnostic not ended'}
 
-        if not diagnostic_type:
-            results = user_rec.objects.filter(user_id = user_id)
-        else:
+        if diagnostic_type:
             results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
+        else:
+            # results = user_rec.objects.filter(user_id = user_id)
+            return {'status':400, 'message':'GET-request expected'}
 
         if not results:
             if not diagnostic_type:
@@ -68,7 +82,7 @@ class DiagnosticActivity():
                 
         for res in results:
                 user_recomendations.append(res.recomendation_info())
-
+# data:{"competence_lvl":"", "standard":{}, "dppsh":{}}
         return {'status':200, 'data':user_recomendations}
             
 

@@ -73,10 +73,8 @@ class UserSession():
         try:
             token = jwt.decode(str(token), SECRET_KEY, algorithms=["HS256"])
         except jwt.InvalidSignatureError:
-            print({'status': 403, 'message': 'Not valid token'})
             return {'status': 403, 'message': 'Not valid token'}
         except jwt.exceptions.ExpiredSignatureError:
-            print({'status': 403, 'message': 'Signature has expired'})
             return {'status': 403, 'message': 'Signature has expired'}
 
         return token

@@ -60,17 +60,23 @@ def get_diagnostic(request):
 
 @csrf_exempt
 def load_recomendations(request):
-    # data = json.loads(request.body.decode())
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
 
-    # token = UserSession.decode_token(data.get('access'))
-    # if 'status' in token:
-    #     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
 
     # email = token['user_info']['email']
     # if email != 'develop@admin.com':
     #     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=403)
 
-    # result = DiagnosticHelpers.load_recomendations_to_db(data.get('file_name'), data.get('diagnostic_type'))
+    result = DiagnosticHelpers.load_recomendations_to_db(data.get('file_name'), data.get('diagnostic_type'))
 
     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=403)
 

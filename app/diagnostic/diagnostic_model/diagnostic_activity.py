@@ -54,7 +54,7 @@ class DiagnosticActivity():
             if not results:
                 return {'status': 425, 'message':'Diagnostic not ended'}
             user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
-            
+
             # print(user_recomendations)
             # for res in results:
             #     user_recomendations.append(res.recomendation_info())
@@ -79,9 +79,10 @@ class DiagnosticActivity():
 
             if not results:
                 return {'status':500, 'message':'Internal server error'}
-                
-        for res in results:
-                user_recomendations.append(res.recomendation_info())
+
+        user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
+        # for res in results:
+        #         user_recomendations.append(res.recomendation_info())
 # data:{"competence_lvl":"", "standard":{}, "dppsh":{}}
         return {'status':200, 'data':user_recomendations}
             

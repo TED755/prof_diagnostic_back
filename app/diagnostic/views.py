@@ -31,6 +31,27 @@ def save_progress(request):
     return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=response['status'])
 
 @csrf_exempt
+def get_progress(request):
+    auth = request.headers['Authorization'].split(' ')
+    token = UserSession.decode_token(auth[1])
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+
+    response = {}
+    progress = DiagnosticActivity.get_progress(user_id=token['user_info']['user_id'], diagnostic_type=data.get('diagnostic_type'))
+    
+    if 'data' in progress:
+        response['data'] = progress['data']
+        
+    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=progress['status'])
+
+@csrf_exempt
 def get_diagnostic(request):
     auth = request.headers['Authorization'].split(' ')
     

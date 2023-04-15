@@ -33,6 +33,15 @@ class DiagnosticActivity():
 
         return {'status':201, 'message':'success'}
 
+    def get_progress(user_id: str, diagnostic_type: str):
+        progress = Diagnostic.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
+        if not progress:
+            return {'status': 404, 'message':'No user progress'}
+
+        
+        _progress = progress[0]
+        return {'status':200, 'data':_progress.answers}
+
 
     def get_diagnostic(user_id: str, diagnostic_type: str):
         diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
@@ -54,10 +63,6 @@ class DiagnosticActivity():
             if not results:
                 return {'status': 425, 'message':'Diagnostic not ended'}
             user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
-
-            # print(user_recomendations)
-            # for res in results:
-            #     user_recomendations.append(res.recomendation_info())
 
             return {'status':200, 'data':user_recomendations}
             
@@ -81,9 +86,7 @@ class DiagnosticActivity():
                 return {'status':500, 'message':'Internal server error'}
 
         user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
-        # for res in results:
-        #         user_recomendations.append(res.recomendation_info())
-# data:{"competence_lvl":"", "standard":{}, "dppsh":{}}
+
         return {'status':200, 'data':user_recomendations}
             
 

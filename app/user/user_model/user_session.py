@@ -6,28 +6,25 @@ import jwt
 
 class UserSession():
     def create_session(user: User):
-        # tokens = UserHelpers.create_tokens(user=user)
-        # print (tokens)
-        response = {}
-        timestamp = timezone.now()
-        session = ActiveSession(user_id = user.id, expired = timestamp + timedelta(seconds=SESSION_LIFETIME), 
-                                created_at=timestamp)
-    
-        if not ActiveSession.objects.filter(user_id = user.id):
-            session.save()
-            response = {
-                'status': 201,
-                'message': 'success'
-            }
-        else:
-            response = {
-                'status': 208,
-                'message': 'Already authorized'
-            }
-            # open_session = ActiveSession.objects.filter(user_id = user.id)[0]
-            # open_session.delete()
-            # session.save()
+        timestamp = datetime.utcnow()
+        _expired = timestamp + timedelta(seconds=JWT_ACCESS_TTL)
+        
+        sessions = ActiveSession.objects.filter(user_id = user.id)
+        if sessions:
+            session = sessions[0]
+            UserSession.end_session(session_id=session.id)
 
+        
+        tokens = UserSession.create_tokens(user=user, timestamp=timestamp)
+        session = ActiveSession(user_id = user.id, expired = _expired, 
+                            created_at=timestamp)
+        session.save()
+
+        response = {
+                'status': 201,
+                'message': 'success',
+                'tokens': tokens
+        }
         return response
 
     def end_session(session_id: str):
@@ -39,24 +36,19 @@ class UserSession():
 
         return False
 
-    def create_tokens(user: User):
+    def create_tokens(user: User, timestamp):
         access_token = jwt.encode({
             'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_ACCESS_TTL),
-            'iat': datetime.utcnow(),
+            'exp': timestamp + timedelta(seconds=JWT_ACCESS_TTL),
+            'iat': timestamp,
             'user_info': user.user_info(),
             'type': 'access'
         }, SECRET_KEY, algorithm='HS256')
-        # print(access_token)
-        # print(jwt.decode(access_token, SECRET_KEY, algorithms='HS256'))
-        # print(access_token)
-        # decoded = jwt.decode(access_token, key)
-        # print(decoded)
 
         refresh_token = jwt.encode({
             'iss': 'backend-api',
-            'exp': datetime.utcnow() + timedelta(seconds=JWT_REFRESH_TTL),#JWT_REFRESH_TTL,#
-            'iat': datetime.utcnow(),
+            'exp': timestamp + timedelta(seconds=JWT_REFRESH_TTL),
+            'iat': timestamp,
             'user_info': user.user_info(),
             'type': 'refresh'
         }, SECRET_KEY, algorithm='HS256')

@@ -18,30 +18,30 @@ class UserActivity():
             return {'status':401, 'message':'Invalid email or password'}
         
         session = UserSession.create_session(user=_user)
-        tokens = UserSession.create_tokens(user=_user)
+        # tokens = UserSession.create_tokens(user=_user)
 
         if session['status'] == 201:
             response = {
                 'status': 201,
                 'message': session['message'],
                 'data': {
-                    'access': tokens['access'],
-                    'refresh': tokens['refresh'],
+                    'access': session['tokens']['access'],
+                    'refresh': session['tokens']['refresh'],
                     'refresh_access_in': JWT_ACCESS_TTL,
                     'refresh_in': JWT_REFRESH_TTL
                 }
             }
-        if session['status'] == 208:
-            response = {
-                'status': 200,
-                'message': session['message'],
-                'data': {
-                    'access': tokens['access'],
-                    'refresh': tokens['refresh'],
-                    'refresh_access_in': JWT_ACCESS_TTL,
-                    'refresh_in': JWT_REFRESH_TTL
-                }
-            }
+        # if session['status'] == 208:
+        #     response = {
+        #         'status': 200,
+        #         'message': session['message'],
+        #         'data': {
+        #             'access': tokens['access'],
+        #             'refresh': tokens['refresh'],
+        #             'refresh_access_in': JWT_ACCESS_TTL,
+        #             'refresh_in': JWT_REFRESH_TTL
+        #         }
+        #     }
         return response
 
     def refresh_tokens(refresh: str) -> hash:
@@ -57,9 +57,20 @@ class UserActivity():
         users = User.objects.filter(id = refresh['user_info']['user_id'])
         if not users:
             return {'status': 404, 'message': 'User id not found'}
+        # timestamp = timezone.utcnow()
+        # tokens = UserSession.create_tokens(users[0])
+        # create session
+        session = UserSession.create_session(user=users[0])
+        if session['status'] == 201:
+            response = {
+                'status': 201,
+                'message': session['message'],
+                'data': {
+                    'access': session['tokens']['access'],
+                }
+            }
 
-        tokens = UserSession.create_tokens(users[0])
-        return {'status': 201, 'message':'OK', 'data':{'access': tokens['access']}}
+        return response
 
     def register(data: json)->hash:
         # check email don't exist yet
@@ -82,17 +93,17 @@ class UserActivity():
             return {'status': new_diagnostic['status'], 'message': new_diagnostic['message']}
 
         new_session = UserSession.create_session(user) # create session
-        if new_session['status'] == 208:
-            return {'status': 400, 'message': 'Try uncorrect authorization'}
+        # if new_session['status'] == 208:
+        #     return {'status': 400, 'message': 'Try uncorrect authorization'}
 
-        tokens = UserSession.create_tokens(user) # create tokens
+        # tokens = UserSession.create_tokens(user) # create tokens
 
         return {
             'status': 201,
             'message': new_session['message'],
             'data': {
-                'access': tokens['access'],
-                'refresh': tokens['refresh'],
+                'access': new_session['tokens']['access'],
+                'refresh': new_session['tokens']['refresh'],
                 'refresh_access_in': JWT_ACCESS_TTL,
                 'refresh_in': JWT_REFRESH_TTL
             }

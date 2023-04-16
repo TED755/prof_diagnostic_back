@@ -53,6 +53,10 @@ def refresh(request):
     
     return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=refresh['status'])
 
+@csrf_exempt
+def end_session(request):
+    pass
+
 # @csrf_exempt
 # def profile(request):
 #     try:

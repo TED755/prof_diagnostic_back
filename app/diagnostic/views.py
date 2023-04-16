@@ -48,7 +48,7 @@ def get_progress(request):
     
     if 'data' in progress:
         response['data'] = progress['data']
-        
+
     return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=progress['status'])
 
 @csrf_exempt
@@ -139,13 +139,11 @@ def get_questions(request):
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
 
-    try:
-        data = json.loads(request.body.decode('utf-8'))
-    except ValueError:
-        return HttpResponse(
-            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+    diagnostic_type = request.GET['diagnostic_type']
+    if not diagnostic_type:
+        return HttpResponse(json.dumps({}), status=400)
 
-    questions = DiagnosticActivity.get_questions(data.get('diagnostic_type'))
+    questions = DiagnosticActivity.get_questions(diagnostic_type)
     response = {}
     if 'data' in questions:
         response['data'] = questions['data']

@@ -9,7 +9,7 @@ class DiagnosticActivity():
     def create_diagnostic(user: User, diagnostic_type: str):
         diagnostics = Diagnostic.objects.filter(user_id = user.id, diagnostic_type = diagnostic_type)
         if diagnostics:
-            return {'status': 401, 'message': 'Diagnostic already exists'}
+            return {'status': 400, 'message': 'Diagnostic already exists'}
         
         diagnostic = Diagnostic(user_id =  user.id, 
             diagnostic_type = diagnostic_type if diagnostic_type else 'standard', 
@@ -21,12 +21,12 @@ class DiagnosticActivity():
         diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
 
         if not diagnostics:
-            return {'status': 401, 'message':'Diagnotic not found'}
+            return {'status': 404, 'message':'Diagnotic not found'}
 
         diagnostic = diagnostics[0]
 
         if diagnostic.ended:
-            return {'status': 200, 'message':'Diagnostic was ended yet'}
+            return {'status': 201, 'message':'Diagnostic was ended yet'}
 
         diagnostic.answers = answers
         diagnostic.save()
@@ -47,7 +47,7 @@ class DiagnosticActivity():
         diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
 
         if not diagnostics:
-            return {'status': 401, 'message':'Diagnotic not found'}
+            return {'status': 404, 'message':'Diagnotic not found'}
 
         diagnostic = diagnostics[0]
         
@@ -61,14 +61,14 @@ class DiagnosticActivity():
         if not (diagnostic_type and answers):
             results = user_rec.objects.filter(user_id = user_id)
             if not results:
-                return {'status': 425, 'message':'Diagnostic not ended'}
-            user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
+                # return {'status': 400, 'message':'Diagnostic not ended'}
+                user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
 
             return {'status':200, 'data':user_recomendations}
             
 
         if len(answers) < 45:
-            return {'status': 425, 'message':'Diagnostic not ended'}
+            return {'status': 400, 'message':'Diagnostic not ended'}
 
         if diagnostic_type:
             results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
@@ -78,7 +78,7 @@ class DiagnosticActivity():
 
         if not results:
             if not diagnostic_type:
-                return {'status':401, 'message': 'Diagnostic type expected'}
+                return {'status':400, 'message': 'Diagnostic type expected'}
             DiagnosticActivity.count_results(user_id = user_id, diagnostic_type=diagnostic_type, answers=answers)
             results = user_rec.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
 
@@ -104,7 +104,7 @@ class DiagnosticActivity():
 
     def get_questions(diagnostic_type: str):
         if not diagnostic_type:
-            return {'status':401, 'message': 'Diagnostic type expected'}
+            return {'status':400, 'message': 'Diagnostic type expected'}
         questions = DiagnosticHelpers.read_quetions(diagnostic_type=diagnostic_type)
         return {'status':200, 'data':questions}
         # print(questions)

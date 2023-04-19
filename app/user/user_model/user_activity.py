@@ -3,7 +3,7 @@ from diagnostic.models import *
 from .user_helpers import UserHelpers
 from .user_session import UserSession
 from diagnostic.diagnostic_model.diagnostic_activity import DiagnosticActivity
-from prof_diagnostic.settings import JWT_ACCESS_TTL, JWT_REFRESH_TTL, SECRET_KEY
+from prof_diagnostic.settings import JWT_ACCESS_TTL, JWT_REFRESH_TTL
 import json
 import jwt
 
@@ -76,7 +76,7 @@ class UserActivity():
         # check email don't exist yet
         _users = UserHelpers.find_user_by_email(data.get('email'))
         if _users:
-            return {'status': 401, 'message':'Email already exists'}
+            return {'status': 400, 'message':'Email already exists'}
 
         # adding new user
         new_user = UserHelpers.create_user(data)
@@ -89,7 +89,7 @@ class UserActivity():
         user = _users[0] # getting new user from db by id
 
         new_diagnostic = DiagnosticActivity.create_diagnostic(user, data.get('diagnostic_type')) # create dignostic
-        if new_diagnostic['status'] == 401:
+        if new_diagnostic['status'] == 400:
             return {'status': new_diagnostic['status'], 'message': new_diagnostic['message']}
 
         new_session = UserSession.create_session(user) # create session

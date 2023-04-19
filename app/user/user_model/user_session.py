@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from user.models import *
 from .user_helpers import *
-from prof_diagnostic.settings import SESSION_LIFETIME, SECRET_KEY, JWT_ACCESS_TTL, JWT_REFRESH_TTL
+from prof_diagnostic.settings import SECRET_KEY, JWT_ACCESS_TTL, JWT_REFRESH_TTL
 import jwt
 
 class UserSession():
@@ -37,11 +37,13 @@ class UserSession():
         return False
 
     def create_tokens(user: User, timestamp):
+
         access_token = jwt.encode({
             'iss': 'backend-api',
             'exp': timestamp + timedelta(seconds=JWT_ACCESS_TTL),
             'iat': timestamp,
             'user_info': user.user_info(),
+            'isDiagnosticCompleted': '',
             'type': 'access'
         }, SECRET_KEY, algorithm='HS256')
 
@@ -50,6 +52,7 @@ class UserSession():
             'exp': timestamp + timedelta(seconds=JWT_REFRESH_TTL),
             'iat': timestamp,
             'user_info': user.user_info(),
+            'isDiagnosticCompleted': '',
             'type': 'refresh'
         }, SECRET_KEY, algorithm='HS256')
 

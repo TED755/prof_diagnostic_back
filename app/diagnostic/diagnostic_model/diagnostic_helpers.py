@@ -40,6 +40,9 @@ class DiagnosticHelpers():
             'dppsh':[],
             'competence':''
         }
+
+        if not results_list:
+            return gen_results
         for res in results_list:
             if res.diagnostic_type not in gen_results:
                 gen_results[res.diagnostic_type] = []

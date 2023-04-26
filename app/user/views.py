@@ -11,14 +11,14 @@ def register(request):
         data = json.loads(request.body.decode('utf-8'))
     except ValueError:
         return HttpResponse(
-            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+            json.dumps({}), content_type="application/json", charset='utf-8', status=500)
 
     _response = UserActivity.register(data)
     response = {}
     if 'data' in _response:
         response['data'] = _response['data']
 
-    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=_response['status'])
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=_response['status'])
 
 @csrf_exempt
 def login(request):
@@ -26,7 +26,7 @@ def login(request):
         data = json.loads(request.body.decode('utf-8'))
     except ValueError:
         return HttpResponse(
-            json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+            json.dumps({}), content_type="application/json", charset='utf-8', status=500)
 
     login_user = UserActivity.login(data)
 
@@ -34,7 +34,7 @@ def login(request):
     if 'data' in login_user:
         response['data'] = login_user['data']
 
-    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=login_user['status'])
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=login_user['status'])
 
 @csrf_exempt
 def refresh(request):
@@ -42,7 +42,7 @@ def refresh(request):
     
     token = UserSession.decode_token(auth[1])
     if 'status' in token:
-        return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
     refresh = UserActivity.refresh_tokens(token)
 
@@ -51,7 +51,7 @@ def refresh(request):
     if 'data' in  refresh:
         response['data'] = refresh['data']
     
-    return HttpResponse(json.dumps(response), content_type="text/plain", charset='utf-8', status=refresh['status'])
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=refresh['status'])
 
 @csrf_exempt
 def end_session(request):
@@ -63,11 +63,11 @@ def end_session(request):
 #         data = json.loads(request.body.decode('utf-8'))
 #     except ValueError:
 #         return HttpResponse(
-#             json.dumps({}), content_type="text/plain", charset='utf-8', status=500)
+#             json.dumps({}), content_type="application/json", charset='utf-8', status=500)
         
 #     token = UserSession.decode_token(data.get('access'))
 
 #     if 'status' in token:
-#         return HttpResponse(json.dumps({}), content_type="text/plain", charset='utf-8', status=token['status'])
+#         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
     

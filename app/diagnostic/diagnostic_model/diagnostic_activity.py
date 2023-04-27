@@ -4,7 +4,7 @@ from diagnostic.models import *
 from .diagnostic_result import *
 from .diagnostic_helpers import *
 # import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class DiagnosticActivity():
     def create_diagnostic(user: User, diagnostic_type: str):
@@ -129,5 +129,4 @@ class DiagnosticActivity():
             return {'status':400, 'message': 'Diagnostic type expected'}
         questions = DiagnosticHelpers.read_quetions(diagnostic_type=diagnostic_type)
         return {'status':200, 'data':questions}
-        # print(questions)
         

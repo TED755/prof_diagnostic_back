@@ -3,7 +3,8 @@ from user.models import Recomendation as user_rec
 from diagnostic.models import *
 from .diagnostic_result import *
 from .diagnostic_helpers import *
-import json
+# import json
+from datetime import datetime, timedelta
 
 class DiagnosticActivity():
     def create_diagnostic(user: User, diagnostic_type: str):
@@ -63,8 +64,7 @@ class DiagnosticActivity():
             if not results:
                 # return {'status': 400, 'message':'Diagnostic not ended'}
                 user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
-
-            return {'status':200, 'data':user_recomendations}
+                return {'status':200, 'data':user_recomendations}
             
 
         if len(answers) < 45:
@@ -79,7 +79,9 @@ class DiagnosticActivity():
         if not results:
             if not diagnostic_type:
                 return {'status':400, 'message': 'Diagnostic type expected'}
-            DiagnosticActivity.count_results(user_id = user_id, diagnostic_type=diagnostic_type, answers=answers)
+            DiagnosticActivity.end_diagnostic(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+            # DiagnosticActivity.save_progress(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+            # DiagnosticActivity.count_results(user_id = user_id, diagnostic_type=diagnostic_type, answers=answers)
             results = user_rec.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
 
             if not results:
@@ -89,12 +91,32 @@ class DiagnosticActivity():
 
         return {'status':200, 'data':user_recomendations}
             
+    def end_diagnostic(user_id:str, diagnostic_type:str, answers:list):
+        DiagnosticActivity.save_progress(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+        DiagnosticActivity.count_results(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+        DiagnosticActivity.set_timestamp(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
 
     def count_results(user_id: str, diagnostic_type: str, answers: list):
         results = DiagnosticResult(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
         results.count_competence_lvl()
         results.find_recomendations_dpo()
 
+    def set_timestamp(user_id:str, diagnostic_type:str, answers:list):
+        diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
+
+        timestamp = datetime.utcnow()
+        if not diagnostics:
+            return {'status': 404, 'message':'Diagnotic not found'}
+
+        diagnostic = diagnostics[0]
+
+        if diagnostic.ended:
+            return {'status': 201, 'message':'Diagnostic was ended yet'}
+
+        diagnostic.ended = timestamp
+        diagnostic.save()
+
+        return {'status':200, 'message':'success'}
 
     def start_diagnostic(user_id: str):
         pass

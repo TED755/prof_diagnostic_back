@@ -123,7 +123,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-JWT_ACCESS_TTL = 300 # seconds
+JWT_ACCESS_TTL = 3600 * 24 * 7#300 # seconds
 
 JWT_REFRESH_TTL = 3600 * 24 * 7
 

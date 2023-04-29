@@ -59,6 +59,10 @@ class DiagnosticActivity():
         if not user_id:
             return {'status':400, 'message':'Invalid parameters given'}
 
+        results = user_rec.objects.filter(user_id = user_id) #поправить позже
+
+        print(results)
+
         if not (diagnostic_type and answers):
             results = user_rec.objects.filter(user_id = user_id)
             if not results:
@@ -67,11 +71,12 @@ class DiagnosticActivity():
                 return {'status':200, 'data':user_recomendations}
             
 
-        if len(answers) < 45:
-            return {'status': 400, 'message':'Diagnostic not ended'}
-
+        # if len(answers) < 45:
+        #     return {'status': 400, 'message':'Diagnostic not ended'}
+        print(diagnostic_type)
         if diagnostic_type:
             results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
+            print(results)
         else:
             # results = user_rec.objects.filter(user_id = user_id)
             return {'status':400, 'message':'GET-request expected'}

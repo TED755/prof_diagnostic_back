@@ -110,7 +110,8 @@ def get_results(request):
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
     if request.method == 'GET':
-        result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'])
+        result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], diagnostic_type=request.GET['diagnostic_type'])
+        print(result)
     elif request.method == 'POST':
         try:
             data = json.loads(request.body.decode('utf-8'))

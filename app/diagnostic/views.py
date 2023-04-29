@@ -104,6 +104,7 @@ def load_recomendations(request):
 @csrf_exempt
 def get_results(request):
     auth = request.headers['Authorization'].split(' ')
+    print(auth)
     
     token = UserSession.decode_token(auth[1])
     if 'status' in token:

@@ -104,29 +104,47 @@ def load_recomendations(request):
 @csrf_exempt
 def get_results(request):
     auth = request.headers['Authorization'].split(' ')
-    return HttpResponse(json.dumps({'auth':auth}), content_type="application/json", charset='utf-8', status=200)
+    # return HttpResponse(json.dumps({'auth':auth}), content_type="application/json", charset='utf-8', status=200)
     # print(auth)
     
     token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
-    if request.method == 'GET':
-        result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], diagnostic_type=request.GET['diagnostic_type'])
-        print(result)
-    elif request.method == 'POST':
+    if request.method not in ['GET', 'POST']:
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    answers = []
+    if request.method == 'POST':
         try:
             data = json.loads(request.body.decode('utf-8'))
         except ValueError:
-            return HttpResponse(
-                json.dumps({}), content_type="application/json", charset='utf-8', status=500)
+            return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
 
-        result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], 
-        diagnostic_type=data.get('diagnostic_type'), answers=data.get('answers'))
-    else:
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+        answers = data.get('answers')
+    if request.method == 'GET':
+        if 'diagnostic_type' in request.GET:
+            diagnostic_type = request.GET['diagnostic_type']
+        else:
+            diagnostic_type = ''
+    result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], method=request.method, 
+        diagnostic_type=diagnostic_type, answers=answers)
+    # if request.method == 'GET':
+    #     result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], diagnostic_type=request.GET['diagnostic_type'])
+    #     # print(result)
+    # elif request.method == 'POST':
+    #     try:
+    #         data = json.loads(request.body.decode('utf-8'))
+    #     except ValueError:
+    #         return HttpResponse(
+    #             json.dumps({}), content_type="application/json", charset='utf-8', status=500)
 
-    
+    #     result = DiagnosticActivity.get_results(user_id=token['user_info']['user_id'], 
+    #     diagnostic_type=data.get('diagnostic_type'), answers=data.get('answers'))
+    # else:
+    #     return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    print(result)
     response = {}
     if 'data' in result:
         response['data'] = result['data']

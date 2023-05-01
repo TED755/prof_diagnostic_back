@@ -54,43 +54,68 @@ class DiagnosticActivity():
         
         return {'status': 200, 'message':'Success', 'data':diagnostic.diagnostic_info()}
 
-    def get_results(user_id: str, diagnostic_type='', answers=[]):
+    def get_results(user_id: str, method:str, diagnostic_type='', answers=[]):
         user_recomendations = {}
         if not user_id:
             return {'status':400, 'message':'Invalid parameters given'}
 
-        results = user_rec.objects.filter(user_id = user_id) #поправить позже
+        if method == 'GET':
+            if diagnostic_type:
+                results = user_rec.objects.filter(user_id = user_id, diagnostic_type=diagnostic_type)
+            else:
+                results = user_rec.objects.filter(user_id = user_id)
 
-        print(results)
-
-        if not (diagnostic_type and answers):
-            results = user_rec.objects.filter(user_id = user_id)
             if not results:
-                # return {'status': 400, 'message':'Diagnostic not ended'}
-                user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
-                return {'status':200, 'data':user_recomendations}
+                return {'status': 400, 'message':'Diagnostic not ended'}
+            # pass
+        elif method == 'POST':
+            print(method)
+            print(answers)
+            if len(answers) < 45:
+                return {'status': 400, 'message':'Diagnostic not ended'}
+            if not diagnostic_type:
+                return {'status':400, 'message': 'Diagnostic type expected'}
+            results = user_rec.objects.filter(user_id = user_id, diagnostic_type=diagnostic_type)
+            if results:
+                return {'status':200, 'message': 'Succes'}
+            DiagnosticActivity.end_diagnostic(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+            return {'status':200, 'message': 'Succes'}
+            # pass
+        else:
+            return {'status':400, 'message':'GET-request or POST-request expected'}
+        
+        # results = user_rec.objects.filter(user_id = user_id) #поправить позже
+
+        # print(results)
+
+        # if not (diagnostic_type and answers):
+        #     results = user_rec.objects.filter(user_id = user_id)
+        #     if not results:
+        #         # return {'status': 400, 'message':'Diagnostic not ended'}
+        #         user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
+        #         return {'status':200, 'data':user_recomendations}
             
 
         # if len(answers) < 45:
         #     return {'status': 400, 'message':'Diagnostic not ended'}
-        print(diagnostic_type)
-        if diagnostic_type:
-            results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
-            print(results)
-        else:
-            # results = user_rec.objects.filter(user_id = user_id)
-            return {'status':400, 'message':'GET-request expected'}
+        # print(diagnostic_type)
+        # if diagnostic_type:
+        #     results = user_rec.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
+        #     # print(results)
+        # else:
+        #     # results = user_rec.objects.filter(user_id = user_id)
+        #     return {'status':400, 'message':'GET-request expected'}
 
-        if not results:
-            if not diagnostic_type:
-                return {'status':400, 'message': 'Diagnostic type expected'}
-            DiagnosticActivity.end_diagnostic(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
-            # DiagnosticActivity.save_progress(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
-            # DiagnosticActivity.count_results(user_id = user_id, diagnostic_type=diagnostic_type, answers=answers)
-            results = user_rec.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
+        # if not results:
+        #     if not diagnostic_type:
+        #         return {'status':400, 'message': 'Diagnostic type expected'}
+        #     DiagnosticActivity.end_diagnostic(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+        #     # DiagnosticActivity.save_progress(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
+        #     # DiagnosticActivity.count_results(user_id = user_id, diagnostic_type=diagnostic_type, answers=answers)
+        #     results = user_rec.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
 
-            if not results:
-                return {'status':500, 'message':'Internal server error'}
+        # if not results:
+        #     return {'status':500, 'message':'Internal server error'}
 
         user_recomendations = DiagnosticHelpers.generate_results(results_list=results)
 

@@ -1,5 +1,6 @@
 from diagnostic.models import Recomendation as rec
 from user.models import Recomendation as user_rec
+from diagnostic.diagnostic_model.diagnostic_helpers import DiagnosticHelpers
 
 class DiagnosticResult():
     def __init__(self, user_id: str, diagnostic_type: str, answers: list):
@@ -34,8 +35,9 @@ class DiagnosticResult():
             return 4
 
     def find_recomendations_dpo(self):
-        recomendations = rec.objects.filter(diagnostic_type=self.diagnostic_type).order_by('id')
-
+        # recomendations = rec.objects.filter(diagnostic_type=self.diagnostic_type).order_by('id')
+        recomendations = DiagnosticHelpers.read_recomendations(diagnostic_type=self.diagnostic_type)
+        
         if not recomendations:
             return {'status': 500, 'message':'Internal server error. Recomendations reading failed'}
 

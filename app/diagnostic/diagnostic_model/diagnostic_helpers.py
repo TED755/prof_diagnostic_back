@@ -4,6 +4,7 @@ import json
 import os
 
 class DiagnosticHelpers():
+    @DeprecationWarning # use read_recomendations
     def load_recomendations_to_db(file_name: str, diagnostic_type: str):
         if not os.path.exists(file_name):
             return {'status': 404, 'message':'File not found'}
@@ -17,6 +18,28 @@ class DiagnosticHelpers():
             recomendation.save()
 
         fh.close()
+
+    def read_recomendations(diagnostic_type: str, file_name:str = '')->list:
+        if not file_name:
+            if diagnostic_type == 'standard':
+                file_name = 'files/DPO_text.yaml'
+            elif diagnostic_type == 'dppsh':
+                file_name = 'files/DPO_text_dppsh.yaml'
+            else:
+                return []
+
+        recomendations_list = []
+        if not os.path.exists(file_name):
+            return []
+        with open(file=file_name) as fh:
+            read_data = yaml.load(fh, Loader=yaml.FullLoader)
+
+        for index, str in enumerate(read_data):
+            recomendation = Recomendation(index=index + 1, diagnostic_type=diagnostic_type, 
+                level_1=str['f'], level_2=str['s'], level_3=str['t'])
+            recomendations_list.append(recomendation)
+        
+        return {'status':201, 'message':'success', 'data':recomendations_list}
 
     def read_quetions(diagnostic_type: str)->json:
         questions_path = 'files/questions.json'

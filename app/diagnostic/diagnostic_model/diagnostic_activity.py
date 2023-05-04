@@ -69,8 +69,6 @@ class DiagnosticActivity():
                 return {'status': 400, 'message':'Diagnostic not ended'}
             # pass
         elif method == 'POST':
-            print(method)
-            print(answers)
             if len(answers) < 45:
                 return {'status': 400, 'message':'Diagnostic not ended'}
             if not diagnostic_type:

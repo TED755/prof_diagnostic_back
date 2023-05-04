@@ -37,7 +37,7 @@ class DiagnosticResult():
     def find_recomendations_dpo(self):
         # recomendations = rec.objects.filter(diagnostic_type=self.diagnostic_type).order_by('id')
         recomendations = DiagnosticHelpers.read_recomendations(diagnostic_type=self.diagnostic_type)
-        
+        # print(recomendations)
         if not recomendations:
             return {'status': 500, 'message':'Internal server error. Recomendations reading failed'}
 
@@ -46,6 +46,7 @@ class DiagnosticResult():
         
         for index, answer in enumerate(self.answers):
             if answer == 0:
+                print(recomendations[index])
                 recomendation = recomendations[index]
 
                 if self.get_competence_lvl() == 1:

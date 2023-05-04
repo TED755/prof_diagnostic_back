@@ -39,7 +39,7 @@ class DiagnosticHelpers():
                 level_1=str['f'], level_2=str['s'], level_3=str['t'])
             recomendations_list.append(recomendation)
         
-        return {'status':201, 'message':'success', 'data':recomendations_list}
+        return recomendations_list
 
     def read_quetions(diagnostic_type: str)->json:
         questions_path = 'files/questions.json'

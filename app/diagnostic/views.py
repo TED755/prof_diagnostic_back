@@ -122,6 +122,7 @@ def get_results(request):
             return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
 
         answers = data.get('answers')
+        diagnostic_type = data.get('diagnostic_type')
     if request.method == 'GET':
         if 'diagnostic_type' in request.GET:
             diagnostic_type = request.GET['diagnostic_type']

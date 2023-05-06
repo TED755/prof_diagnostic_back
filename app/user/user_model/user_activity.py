@@ -56,12 +56,17 @@ class UserActivity():
 
         users = User.objects.filter(id = refresh['user_info']['user_id'])
         if not users:
-            return {'status': 404, 'message': 'User id not found'}
+            return {'status': 401, 'message': 'User id not found'}
         # timestamp = timezone.utcnow()
         # tokens = UserSession.create_tokens(users[0])
-        # create session
+       
 
-        # End session and create new
+        # End session
+        session = UserSession.get_session_by_user_id(user_id=users[0].id)
+        if not UserSession.end_session(session_id=session.id):
+            return {'status': 500, 'message':'Internal server error'}
+        
+        # create session
         session = UserSession.create_session(user=users[0])
         if session['status'] == 201:
             response = {

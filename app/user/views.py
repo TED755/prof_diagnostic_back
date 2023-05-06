@@ -38,13 +38,22 @@ def login(request):
 
 @csrf_exempt
 def refresh(request):
-    auth = request.headers['Authorization'].split(' ')
+    # auth = request.headers['Authorization'].split(' ')
+    # token = UserSession.decode_token(auth[1])
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except ValueError:
+        return HttpResponse(
+            json.dumps({}), content_type="application/json", charset='utf-8', status=500)
     
-    token = UserSession.decode_token(auth[1])
+    token = UserSession.decode_token(data.get('refresh'))
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
     refresh = UserActivity.refresh_tokens(token)
+
+    if refresh['status'] != 201:
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=refresh['status'])
 
     response = {}
 

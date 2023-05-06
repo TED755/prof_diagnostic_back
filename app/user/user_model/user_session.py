@@ -68,8 +68,14 @@ class UserSession():
         try:
             token = jwt.decode(str(token), SECRET_KEY, algorithms=["HS256"])
         except jwt.InvalidSignatureError:
-            return {'status': 403, 'message': 'Not valid token'}
+            return {'status': 401, 'message': 'Not valid token'}
         except jwt.exceptions.ExpiredSignatureError:
-            return {'status': 403, 'message': 'Signature has expired'}
+            return {'status': 401, 'message': 'Signature has expired'}
 
         return token
+    
+    def get_session_by_user_id(user_id: str):
+        sessions = ActiveSession.objects.filter(user_id=user_id)
+        if not sessions:
+            return {'status':401, 'messsage': 'Session not found'}
+        return sessions[0]

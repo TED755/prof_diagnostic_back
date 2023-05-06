@@ -78,4 +78,19 @@ class UserSession():
         sessions = ActiveSession.objects.filter(user_id=user_id)
         if not sessions:
             return {'status':401, 'messsage': 'Session not found'}
-        return sessions[0]
+        return {'status':201, 'message':'success', 'data':sessions[0]}
+    
+    def session_expired(refresh_token:str):
+        user_id = refresh_token['user_info']['user_id']
+        session = UserSession.get_session_by_user_id(user_id=user_id)
+
+        if 'status' not in session:
+            return {'status':500, 'message':'Internal server error'}
+        elif session['status'] == 401:
+            return session
+        
+        _session = session['data']
+        if refresh_token['iat'] == _session.created_at:
+            return {'status':401, 'message': 'Session expired', 'data':True}
+        else:
+            return {'status':201, 'message': 'Session not expired', 'data':False}

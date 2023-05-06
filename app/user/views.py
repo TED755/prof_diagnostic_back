@@ -50,6 +50,16 @@ def refresh(request):
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
+    # TODO: check session token expired
+    # check session not expired
+    session_expired = UserSession.session_expired(refresh_token=token)
+    if 'data' in session_expired:
+        print(session_expired['data'])
+        if session_expired['data']:
+            return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+    else:
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+
     refresh = UserActivity.refresh_tokens(token)
 
     if refresh['status'] != 201:

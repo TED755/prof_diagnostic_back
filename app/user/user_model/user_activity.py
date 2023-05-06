@@ -60,6 +60,8 @@ class UserActivity():
         # timestamp = timezone.utcnow()
         # tokens = UserSession.create_tokens(users[0])
         # create session
+
+        # End session and create new
         session = UserSession.create_session(user=users[0])
         if session['status'] == 201:
             response = {
@@ -67,6 +69,9 @@ class UserActivity():
                 'message': session['message'],
                 'data': {
                     'access': session['tokens']['access'],
+                    'refresh': session['tokens']['refresh'],
+                    'refresh_access_in': JWT_ACCESS_TTL,
+                    'refresh_in': JWT_REFRESH_TTL
                 }
             }
 

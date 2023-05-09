@@ -29,7 +29,8 @@ class User(models.Model):
 
 class ActiveSession(models.Model):
     user_id = models.IntegerField(blank=False)
-    expired = models.DateTimeField(default=timezone.now)
+    is_expired = models.BooleanField(default=False, blank=True)
+    expired_at = models.DateTimeField(default=timezone.now)
     created_at = models.DateTimeField(default=timezone.now, blank=True)
 
 class Recomendation(models.Model):

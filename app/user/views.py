@@ -55,8 +55,9 @@ def refresh(request):
     session_expired = UserSession.session_expired(refresh_token=token)
     if 'data' in session_expired:
         print(session_expired['data'])
+       
         if session_expired['data']:
-            return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+            return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
     else:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 

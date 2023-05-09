@@ -63,7 +63,8 @@ class UserActivity():
 
         # End session
         session = UserSession.get_session_by_user_id(user_id=users[0].id)
-        if not UserSession.end_session(session_id=session.id):
+        # print(session['data'].id)
+        if not UserSession.end_session(session_id=session['data'].id):
             return {'status': 500, 'message':'Internal server error'}
         
         # create session

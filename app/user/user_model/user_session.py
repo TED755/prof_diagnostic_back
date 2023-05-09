@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from django.utils import timezone
 from user.models import *
 from .user_helpers import *
 from prof_diagnostic.settings import SECRET_KEY, JWT_ACCESS_TTL, JWT_REFRESH_TTL
@@ -18,6 +19,7 @@ class UserSession():
         tokens = UserSession.create_tokens(user=user, timestamp=timestamp)
         session = ActiveSession(user_id = user.id, expired = _expired, 
                             created_at=timestamp)
+        # print(session.created_at)
         session.save()
 
         response = {
@@ -83,14 +85,21 @@ class UserSession():
     def session_expired(refresh_token:str):
         user_id = refresh_token['user_info']['user_id']
         session = UserSession.get_session_by_user_id(user_id=user_id)
-
+        
         if 'status' not in session:
             return {'status':500, 'message':'Internal server error'}
         elif session['status'] == 401:
             return session
         
         _session = session['data']
-        if refresh_token['iat'] == _session.created_at:
+        # print(f"Token {datetime.fromtimestamp(refresh_token['iat'])}")
+        print(f"Token {refresh_token['iat']}")
+        print(f"Token exp {datetime.fromtimestamp(refresh_token['exp'])}")
+        print(f"Session created_at {int(datetime.timestamp(_session.created_at))}")
+        print(f"Session exp {int(datetime.timestamp(_session.expired))}")
+        # if refresh_token['iat'] == _session.created_at:
+        # if refresh_token['iat'] != int(datetime.timestamp(_session.created_at)):
+        if int(datetime.timestamp(_session.created_at)) != refresh_token['iat']:
             return {'status':401, 'message': 'Session expired', 'data':True}
         else:
             return {'status':201, 'message': 'Session not expired', 'data':False}

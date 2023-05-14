@@ -4,6 +4,7 @@ from .user_helpers import UserHelpers
 from .user_session import UserSession
 from diagnostic.diagnostic_model.diagnostic_activity import DiagnosticActivity
 from prof_diagnostic.settings import JWT_ACCESS_TTL, JWT_REFRESH_TTL
+from datetime import datetime, timedelta
 import json
 import jwt
 
@@ -54,6 +55,7 @@ class UserActivity():
         #     UserSession.end_session(session_id)
         #     return {'status': 403, 'message': 'Signature has expired'}
 
+        print(refresh)
         users = User.objects.filter(id = refresh['user_info']['user_id'])
         if not users:
             return {'status': 401, 'message': 'User id not found'}
@@ -62,9 +64,12 @@ class UserActivity():
        
 
         # End session
-        session = UserSession.get_session_by_user_id(user_id=users[0].id)
+        # session = UserSession.get_session_by_user_id(user_id=users[0].id)
+        session = UserSession.get_active_session_by_user_id(user_id=users[0].id, 
+                                                            created_at=datetime.fromtimestamp(refresh['iat']))
         # print(session['data'].id)
-        if not UserSession.end_session(session_id=session['data'].id):
+
+        if not UserSession.end_session(session_id=session['data'].id): #may be important
             return {'status': 500, 'message':'Internal server error'}
         
         # create session

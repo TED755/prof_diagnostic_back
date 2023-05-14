@@ -34,7 +34,8 @@ class UserSession():
         return response
 
     def end_session(session_id: str):
-        sessions = ActiveSession.objects.filter(id = session_id, is_expired = False)
+        print(session_id)
+        sessions = ActiveSession.objects.filter(id = session_id)
         if sessions:
             close_session = sessions[0]
             close_session.is_expired = True
@@ -45,15 +46,6 @@ class UserSession():
         return False
 
     def create_tokens(user: User, timestamp):
-        access = {'iss': 'backend-api',
-            'exp': timestamp + timedelta(seconds=JWT_ACCESS_TTL),
-            'iat': timestamp,
-            'user_info': user.user_info(),
-            'isDiagnosticCompleted': '',
-            'type': 'access'}
-        
-        print(access)
-
         access_token = jwt.encode({
             'iss': 'backend-api',
             'exp': timestamp + timedelta(seconds=JWT_ACCESS_TTL),
@@ -62,9 +54,6 @@ class UserSession():
             'isDiagnosticCompleted': '',
             'type': 'access'
         }, SECRET_KEY, algorithm='HS256')
-
-        access = UserSession.decode_token(access_token)
-        print(datetime.fromtimestamp(access['iat']))
 
         refresh_token = jwt.encode({
             'iss': 'backend-api',
@@ -99,9 +88,18 @@ class UserSession():
             return {'status':401, 'messsage': 'Session not found'}
         return {'status':201, 'message':'success', 'data':sessions[0]}
     
+    def get_active_session_by_user_id(user_id: str, created_at:datetime):
+        sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False, created_at=created_at)
+        if not sessions:
+            return {'status':401, 'messsage': 'Active sessions not found'}
+        return {'status':201, 'message':'success', 'data':sessions[0]}
+    
     def session_expired(refresh_token:str):
         user_id = refresh_token['user_info']['user_id']
-        session = UserSession.get_session_by_user_id(user_id=user_id)
+        # session = UserSession.get_session_by_user_id(user_id=user_id)
+        session = UserSession.get_active_session_by_user_id(user_id=user_id, 
+                                                            created_at=datetime.fromtimestamp(refresh_token['iat']))
+        # print(session['data'].id)
         
         if 'status' not in session:
             return {'status':500, 'message':'Internal server error'}
@@ -109,14 +107,18 @@ class UserSession():
             return session
         
         _session = session['data']
+        created_at = int(datetime.timestamp(_session.created_at))
         # print(f"Token {datetime.fromtimestamp(refresh_token['iat'])}")
-        print(f"Token {refresh_token['iat']}")
-        print(f"Token exp {datetime.fromtimestamp(refresh_token['exp'])}")
-        print(f"Session created_at {int(datetime.timestamp(_session.created_at))}")
-        print(f"Session exp {int(datetime.timestamp(_session.expired))}")
+        # print(f"Token {refresh_token['iat']}")
+        # print(f"Token exp {datetime.fromtimestamp(refresh_token['exp'])}")
+        # print(f"Session created_at {int(datetime.timestamp(_session.created_at))}")
+        # print(f"Session exp {int(datetime.timestamp(_session.expired))}")
         # if refresh_token['iat'] == _session.created_at:
         # if refresh_token['iat'] != int(datetime.timestamp(_session.created_at)):
-        if int(datetime.timestamp(_session.created_at)) != refresh_token['iat']:
-            return {'status':401, 'message': 'Session expired', 'data':True}
+        print(f"Token: {refresh_token['iat']}")
+        print(f"Session: {created_at}")
+        print(created_at != refresh_token['iat'])
+        if created_at != refresh_token['iat']:
+            return {'status':401, 'message': 'Session expired', 'data':{'expired': True, 'session_id':_session.id}}
         else:
             return {'status':201, 'message': 'Session not expired', 'data':False}

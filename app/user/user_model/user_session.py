@@ -8,16 +8,20 @@ import jwt
 class UserSession():
     def create_session(user: User):
         timestamp = datetime.utcnow()
+        # print(f"timestamp: {timestamp}")
+        # return {}
         _expired = timestamp + timedelta(seconds=JWT_ACCESS_TTL)
+        # print(_expired)
         
         sessions = ActiveSession.objects.filter(user_id = user.id)
         if sessions:
             session = sessions[0]
             UserSession.end_session(session_id=session.id)
 
-        
         tokens = UserSession.create_tokens(user=user, timestamp=timestamp)
-        session = ActiveSession(user_id = user.id, expired = _expired, 
+        timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        _expired = _expired.strftime("%Y-%m-%d %H:%M:%S")
+        session = ActiveSession(user_id = user.id, expired_at = _expired, 
                             created_at=timestamp)
         # print(session.created_at)
         session.save()
@@ -30,15 +34,25 @@ class UserSession():
         return response
 
     def end_session(session_id: str):
-        sessions = ActiveSession.objects.filter(id = session_id)
+        sessions = ActiveSession.objects.filter(id = session_id, is_expired = False)
         if sessions:
             close_session = sessions[0]
-            close_session.delete()
+            close_session.is_expired = True
+            close_session.save()
+            # close_session.delete()
             return True
 
         return False
 
     def create_tokens(user: User, timestamp):
+        access = {'iss': 'backend-api',
+            'exp': timestamp + timedelta(seconds=JWT_ACCESS_TTL),
+            'iat': timestamp,
+            'user_info': user.user_info(),
+            'isDiagnosticCompleted': '',
+            'type': 'access'}
+        
+        print(access)
 
         access_token = jwt.encode({
             'iss': 'backend-api',
@@ -48,6 +62,9 @@ class UserSession():
             'isDiagnosticCompleted': '',
             'type': 'access'
         }, SECRET_KEY, algorithm='HS256')
+
+        access = UserSession.decode_token(access_token)
+        print(datetime.fromtimestamp(access['iat']))
 
         refresh_token = jwt.encode({
             'iss': 'backend-api',

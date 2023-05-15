@@ -60,7 +60,7 @@ class UserActivity():
         #     UserSession.end_session(session_id)
         #     return {'status': 403, 'message': 'Signature has expired'}
 
-        print(refresh)
+        # print(refresh)
         users = User.objects.filter(id = refresh['user_info']['user_id'])
         if not users:
             return {'status': 401, 'message': 'User id not found'}
@@ -74,7 +74,7 @@ class UserActivity():
                                                             created_at=datetime.fromtimestamp(refresh['iat']))
         # print(session['data'].id)
 
-        if not UserSession.end_session(session_id=session['data'].id): #may be important
+        if not UserSession.end_session(session_id=session['data'].id):
             return {'status': 500, 'message':'Internal server error'}
         
         # create session

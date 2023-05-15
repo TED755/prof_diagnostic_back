@@ -139,4 +139,13 @@ class UserSession():
         else:
             return {'status':201, 'message': 'Session not expired', 'data':False}
         
-
+    def end_session_if_not_active(token:str):
+        session_expired = UserSession.session_expired(token=token)
+        print(f"Session info: {session_expired}") #For logging
+        if 'data' in session_expired:
+            if session_expired['data']:
+                if UserSession.end_session(session_expired['data']['session_id']):
+                    return True
+        else:
+            return True
+        return False

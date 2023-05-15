@@ -18,6 +18,11 @@ class UserActivity():
         if not UserHelpers.check_password(_user, data.get('password')):
             return {'status':401, 'message':'Invalid email or password'}
         
+        session = UserSession.get_active_session_by_user_id(user_id=_user.id)
+
+        if session['status'] == 201:
+            UserSession.end_session(session_id=session['data'].id)
+
         session = UserSession.create_session(user=_user)
         # tokens = UserSession.create_tokens(user=_user)
 

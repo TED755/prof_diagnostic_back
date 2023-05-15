@@ -88,8 +88,11 @@ class UserSession():
             return {'status':401, 'messsage': 'Session not found'}
         return {'status':201, 'message':'success', 'data':sessions[0]}
     
-    def get_active_session_by_user_id(user_id: str, created_at:datetime):
-        sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False, created_at=created_at)
+    def get_active_session_by_user_id(user_id: str, created_at:datetime = None):
+        if created_at:
+            sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False, created_at=created_at)
+        else:
+            sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False)
         if not sessions:
             return {'status':401, 'messsage': 'Active sessions not found'}
         return {'status':201, 'message':'success', 'data':sessions[0]}

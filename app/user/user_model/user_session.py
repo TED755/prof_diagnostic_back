@@ -21,6 +21,7 @@ class UserSession():
         tokens = UserSession.create_tokens(user=user, timestamp=timestamp)
         timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S")
         _expired = _expired.strftime("%Y-%m-%d %H:%M:%S")
+
         session = ActiveSession(user_id = user.id, expired_at = _expired, 
                             created_at=timestamp)
         # print(session.created_at)
@@ -34,7 +35,6 @@ class UserSession():
         return response
 
     def end_session(session_id: str):
-        print(session_id)
         sessions = ActiveSession.objects.filter(id = session_id)
         if sessions:
             close_session = sessions[0]
@@ -97,11 +97,11 @@ class UserSession():
             return {'status':401, 'messsage': 'Active sessions not found'}
         return {'status':201, 'message':'success', 'data':sessions[0]}
     
-    def session_expired(refresh_token:str):
-        user_id = refresh_token['user_info']['user_id']
+    def session_expired(token:str):
+        user_id = token['user_info']['user_id']
         # session = UserSession.get_session_by_user_id(user_id=user_id)
         session = UserSession.get_active_session_by_user_id(user_id=user_id, 
-                                                            created_at=datetime.fromtimestamp(refresh_token['iat']))
+                                                            created_at=datetime.fromtimestamp(token['iat']))
         # print(session['data'].id)
         
         if 'status' not in session:
@@ -110,6 +110,15 @@ class UserSession():
             return session
         
         _session = session['data']
+
+        # print(datetime.timestamp(datetime.utcnow()))
+        # print(datetime.timestamp(_session.expired_at))
+        _timedelta = datetime.timestamp(datetime.utcnow()) - datetime.timestamp(_session.expired_at) 
+        # print(_timedelta)
+        if _timedelta > 0:
+            # print('AAAAAAAAAAAbnavlyay')
+            return {'status':401, 'message': 'Session expired', 'data':{'expired': True, 'session_id':_session.id}}
+
         created_at = int(datetime.timestamp(_session.created_at))
         # print(f"Token {datetime.fromtimestamp(refresh_token['iat'])}")
         # print(f"Token {refresh_token['iat']}")
@@ -118,10 +127,10 @@ class UserSession():
         # print(f"Session exp {int(datetime.timestamp(_session.expired))}")
         # if refresh_token['iat'] == _session.created_at:
         # if refresh_token['iat'] != int(datetime.timestamp(_session.created_at)):
-        print(f"Token: {refresh_token['iat']}")
-        print(f"Session: {created_at}")
-        print(created_at != refresh_token['iat'])
-        if created_at != refresh_token['iat']:
+        # print(f"Token: {refresh_token['iat']}")
+        # print(f"Session: {created_at}")
+        # print(created_at != refresh_token['iat'])
+        if created_at != token['iat']:
             return {'status':401, 'message': 'Session expired', 'data':{'expired': True, 'session_id':_session.id}}
         else:
             return {'status':201, 'message': 'Session not expired', 'data':False}

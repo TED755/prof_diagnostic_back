@@ -53,7 +53,7 @@ def refresh(request):
 
     # TODO: check session token expired
     # check session not expired
-    session_expired = UserSession.session_expired(refresh_token=token)
+    session_expired = UserSession.session_expired(token=token)
     # print(session_expired)
     if 'data' in session_expired:
         if session_expired['data']:

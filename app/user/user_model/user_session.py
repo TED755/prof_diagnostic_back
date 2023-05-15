@@ -90,7 +90,8 @@ class UserSession():
     
     def get_active_session_by_user_id(user_id: str, created_at:datetime = None):
         if created_at:
-            sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False, created_at=created_at)
+            # sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False, created_at=created_at)
+            sessions = ActiveSession.objects.filter(user_id=user_id, created_at=created_at)
         else:
             sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False)
         if not sessions:
@@ -112,7 +113,10 @@ class UserSession():
         _session = session['data']
 
         # print(datetime.timestamp(datetime.utcnow()))
-        # print(datetime.timestamp(_session.expired_at))
+        # print(f"Expired: {_session.is_expired}")
+
+        if _session.is_expired:
+            return {'status':401, 'message': 'Session expired', 'data':{'expired': True, 'session_id':_session.id}}
         _timedelta = datetime.timestamp(datetime.utcnow()) - datetime.timestamp(_session.expired_at) 
         # print(_timedelta)
         if _timedelta > 0:
@@ -134,3 +138,5 @@ class UserSession():
             return {'status':401, 'message': 'Session expired', 'data':{'expired': True, 'session_id':_session.id}}
         else:
             return {'status':201, 'message': 'Session not expired', 'data':False}
+        
+

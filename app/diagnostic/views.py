@@ -59,6 +59,16 @@ def get_diagnostic(request):
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
+    session_expired = UserSession.session_expired(token=token)
+    print(session_expired)
+    if 'data' in session_expired:
+        if session_expired['data']:
+            if not UserSession.end_session(session_expired['data']['session_id']):
+                return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
+            return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=session_expired['status'])
+    else:
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=session_expired['status'])
+
     try:
         data = json.loads(request.body.decode('utf-8'))
     except ValueError:
@@ -145,7 +155,7 @@ def get_results(request):
     # else:
     #     return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
 
-    print(result)
+    # print(result)
     response = {}
     if 'data' in result:
         response['data'] = result['data']

@@ -14,6 +14,9 @@ def save_progress(request):
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
+    if UserSession.end_session_if_not_active(token=token):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+
     try:
         data = json.loads(request.body.decode('utf-8'))
     except ValueError:
@@ -37,6 +40,9 @@ def get_progress(request):
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
+    if UserSession.end_session_if_not_active(token=token):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+
     try:
         data = json.loads(request.body.decode('utf-8'))
     except ValueError:
@@ -59,16 +65,9 @@ def get_diagnostic(request):
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
 
-    session_expired = UserSession.session_expired(token=token)
-    print(session_expired)
-    if 'data' in session_expired:
-        if session_expired['data']:
-            if not UserSession.end_session(session_expired['data']['session_id']):
-                return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
-            return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=session_expired['status'])
-    else:
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=session_expired['status'])
-
+    if UserSession.end_session_if_not_active(token=token):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+    
     try:
         data = json.loads(request.body.decode('utf-8'))
     except ValueError:
@@ -89,6 +88,7 @@ def get_diagnostic(request):
 
     return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=diagnostic['status'])
 
+# @DeprecationWarning()
 @csrf_exempt
 def load_recomendations(request):
     auth = request.headers['Authorization'].split(' ')
@@ -120,6 +120,9 @@ def get_results(request):
     token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+    
+    if UserSession.end_session_if_not_active(token=token):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
 
     if request.method not in ['GET', 'POST']:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
@@ -170,6 +173,9 @@ def get_questions(request):
     token = UserSession.decode_token(auth[1])
     if 'status' in token:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+    
+    if UserSession.end_session_if_not_active(token=token):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
 
     diagnostic_type = request.GET['diagnostic_type']
     if not diagnostic_type:

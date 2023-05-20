@@ -7,12 +7,12 @@ from .diagnostic_helpers import *
 from datetime import datetime
 
 class DiagnosticActivity():
-    def create_diagnostic(user: User, diagnostic_type: str):
-        diagnostics = Diagnostic.objects.filter(user_id = user.id, diagnostic_type = diagnostic_type)
+    def create_diagnostic(user_id: str, diagnostic_type: str):
+        diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)
         if diagnostics:
             return {'status': 400, 'message': 'Diagnostic already exists'}
         
-        diagnostic = Diagnostic(user_id =  user.id, 
+        diagnostic = Diagnostic(user_id =  user_id, 
             diagnostic_type = diagnostic_type if diagnostic_type else 'standard', 
             started = timezone.now())
         diagnostic.save()
@@ -153,7 +153,10 @@ class DiagnosticActivity():
     def load_recomendations(file_name: str):
         result = DiagnosticHelpers.load_recomendations_to_db(file_name=file_name)
 
-    def get_questions(diagnostic_type: str):
+    def get_questions(diagnostic_type: str, user_id: str):
+        diagnostic = DiagnosticActivity.create_diagnostic(user_id=user_id, diagnostic_type=diagnostic_type)
+        print(diagnostic)
+
         if not diagnostic_type:
             return {'status':400, 'message': 'Diagnostic type expected'}
         questions = DiagnosticHelpers.read_quetions(diagnostic_type=diagnostic_type)

@@ -109,9 +109,10 @@ class UserActivity():
         _users = User.objects.filter(id = user_id)
         user = _users[0] # getting new user from db by id
 
-        new_diagnostic = DiagnosticActivity.create_diagnostic(user, data.get('diagnostic_type')) # create dignostic
-        if new_diagnostic['status'] == 400:
-            return {'status': new_diagnostic['status'], 'message': new_diagnostic['message']}
+        # Deprecated
+        # new_diagnostic = DiagnosticActivity.create_diagnostic(user, data.get('diagnostic_type')) # create dignostic
+        # if new_diagnostic['status'] == 400:
+        #     return {'status': new_diagnostic['status'], 'message': new_diagnostic['message']}
 
         new_session = UserSession.create_session(user) # create session
         # if new_session['status'] == 208:

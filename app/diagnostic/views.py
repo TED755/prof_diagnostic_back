@@ -175,17 +175,20 @@ def get_questions(request):
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
     
     if UserSession.end_session_if_not_active(token=token):
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
 
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+    
     diagnostic_type = request.GET['diagnostic_type']
     if not diagnostic_type:
         return HttpResponse(json.dumps({}), status=400)
 
-    questions = DiagnosticActivity.get_questions(diagnostic_type)
+    questions = DiagnosticActivity.get_questions(diagnostic_type, user_id=token['user_info']['user_id'])
     response = {}
     if 'data' in questions:
         response['data'] = questions['data']
     else:
         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
         
-    return HttpResponse(json.dumps(response,ensure_ascii=False), content_type="application/json", charset='utf-8', status=questions['status'])
+    return HttpResponse(json.dumps(response,ensure_ascii=False), content_type="application/json", charset='utf-8', status=200)

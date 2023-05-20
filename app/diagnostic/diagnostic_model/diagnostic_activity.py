@@ -74,9 +74,9 @@ class DiagnosticActivity():
                 return {'status':400, 'message': 'Diagnostic type expected'}
             results = user_rec.objects.filter(user_id = user_id, diagnostic_type=diagnostic_type)
             if results:
-                return {'status':200, 'message': 'Succes'}
+                return {'status':201, 'message': 'Succes'}
             DiagnosticActivity.end_diagnostic(user_id=user_id, diagnostic_type=diagnostic_type, answers=answers)
-            return {'status':200, 'message': 'Succes'}
+            return {'status':201, 'message': 'Succes'}
             # pass
         else:
             return {'status':400, 'message':'GET-request or POST-request expected'}

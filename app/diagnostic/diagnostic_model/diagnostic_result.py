@@ -46,7 +46,7 @@ class DiagnosticResult():
         
         for index, answer in enumerate(self.answers):
             if answer == 0:
-                print(recomendations[index])
+                # print(recomendations[index])
                 recomendation = recomendations[index]
 
                 if self.get_competence_lvl() == 1:

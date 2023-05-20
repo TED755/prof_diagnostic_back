@@ -39,6 +39,8 @@ class DiagnosticHelpers():
                 level_1=str['f'], level_2=str['s'], level_3=str['t'])
             recomendations_list.append(recomendation)
         
+        fh.close()
+
         return recomendations_list
 
     def read_quetions(diagnostic_type: str)->json:
@@ -52,7 +54,8 @@ class DiagnosticHelpers():
         # read_data = json.loads(questions_path)
 
         questions = read_data[diagnostic_type]
-        # fh.close()
+        
+        f.close()
         return questions
 
     def generate_results(results_list: list)->hash:
@@ -63,13 +66,30 @@ class DiagnosticHelpers():
             'dppsh':[],
             'competence':''
         }
+        
+        links_path = 'files/more_info_links_standard.json'
+        if not os.path.exists(links_path):
+            return {'status':500, 'message':'Internal server error'}
+
+        with open(links_path, 'r', encoding='utf-8') as f: #открыли файл с данными
+            links_data = json.load(f)
+        f.close()
+        
+        more_info_links = links_data['links']
 
         if not results_list:
             return gen_results
         for res in results_list:
             if res.diagnostic_type not in gen_results:
                 gen_results[res.diagnostic_type] = []
-            gen_results[res.diagnostic_type].append(res.hash_recomendation())
+            
+            print(res.diagnostic_type == 'standard')
+            if res.diagnostic_type == 'standard':
+                print(f"{res.hash_recomendation()}. {more_info_links[res.index - 1]}")
+                gen_results[res.diagnostic_type]\
+                    .append(f"{res.hash_recomendation()}. <a href={more_info_links[res.index - 1]}>Узнать подробнее</a>")
+            else:
+                gen_results[res.diagnostic_type].append(res.hash_recomendation())
                 
 
         gen_results['competence'] = results_list[0].competence_lvl

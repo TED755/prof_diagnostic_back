@@ -66,7 +66,8 @@ class DiagnosticActivity():
                 results = user_rec.objects.filter(user_id = user_id)
 
             if not results:
-                return {'status': 400, 'message':'Diagnostic not ended'}
+                user_recomendations = DiagnosticHelpers.generate_results(results_list=[])
+                return {'status': 400, 'message':'Diagnostic not ended', 'data':user_recomendations}
             # pass
         elif method == 'POST':
             if len(answers) < 45:

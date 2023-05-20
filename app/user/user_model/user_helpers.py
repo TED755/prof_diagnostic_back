@@ -1,3 +1,5 @@
+import json
+import os
 from user.models import User
 
 class UserHelpers():
@@ -32,3 +34,16 @@ class UserHelpers():
 
         user.save()
         return {'status':201, 'message':'success', 'data':user.user_info()}
+    
+    def get_register_data(parameter: str)->list:
+        data_path = 'files/registration_data.json'
+
+        if not os.path.exists(data_path):
+            return {'status':500, 'message':'Internal server error'}
+
+        with open(data_path, 'r', encoding='utf-8') as f: #открыли файл с данными
+            register_data = json.load(f)
+
+        f.close()
+
+        return register_data[parameter]

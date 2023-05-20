@@ -98,17 +98,68 @@ def end_session(request):
     return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=200)
 
     
-# @csrf_exempt
-# def profile(request):
-#     try:
-#         data = json.loads(request.body.decode('utf-8'))
-#     except ValueError:
-#         return HttpResponse(
-#             json.dumps({}), content_type="application/json", charset='utf-8', status=500)
-        
-#     token = UserSession.decode_token(data.get('access'))
+@csrf_exempt
+def get_teaching_exp(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
 
-#     if 'status' in token:
-#         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+    response = response = {
+        "data": UserHelpers.get_register_data('teaching_exp')
+    }
 
-    
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=200)
+
+@csrf_exempt
+def get_position(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    response = {
+        "data": UserHelpers.get_register_data('position')
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=200)
+
+@csrf_exempt
+def get_category(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    response = {
+        "data": UserHelpers.get_register_data('category')
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=200)
+
+@csrf_exempt
+def get_raion(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    response = {
+        "data": UserHelpers.get_register_data('raion')
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=200)
+
+@csrf_exempt
+def get_region_rf(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    response = {
+        "data": UserHelpers.get_register_data('region_rf')
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=200)
+
+@csrf_exempt
+def get_locality_type(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
+    response = {
+        "data": UserHelpers.get_register_data('locality_type')
+    }
+
+    return HttpResponse(json.dumps(response), content_type="application/json", charset='utf-8', status=200)

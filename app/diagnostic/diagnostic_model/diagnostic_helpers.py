@@ -83,9 +83,7 @@ class DiagnosticHelpers():
             if res.diagnostic_type not in gen_results:
                 gen_results[res.diagnostic_type] = []
             
-            print(res.diagnostic_type == 'standard')
             if res.diagnostic_type == 'standard':
-                print(f"{res.hash_recomendation()}. {more_info_links[res.index - 1]}")
                 gen_results[res.diagnostic_type]\
                     .append(f"{res.hash_recomendation()}. <a href={more_info_links[res.index - 1]}>Узнать подробнее</a>")
             else:

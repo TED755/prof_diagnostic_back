@@ -79,6 +79,9 @@ def refresh(request):
 
 @csrf_exempt
 def end_session(request):
+    if request.method != 'GET':
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+
     auth = request.headers['Authorization'].split(' ')
     
     token = UserSession.decode_token(auth[1])

@@ -38,11 +38,9 @@ class DiagnosticActivity():
         progress = Diagnostic.objects.filter(user_id=user_id, diagnostic_type=diagnostic_type)
         if not progress:
             return {'status': 404, 'message':'No user progress'}
-
         
         _progress = progress[0]
         return {'status':200, 'data':_progress.answers}
-
 
     def get_diagnostic(user_id: str, diagnostic_type: str):
         diagnostics = Diagnostic.objects.filter(user_id = user_id, diagnostic_type = diagnostic_type)

@@ -34,14 +34,23 @@ class UserSession():
         }
         return response
 
-    def end_session(session_id: str):
-        sessions = ActiveSession.objects.filter(id = session_id)
-        if sessions:
-            close_session = sessions[0]
-            close_session.is_expired = True
-            close_session.save()
-            # close_session.delete()
-            return True
+    def end_session(session_id: str = "", user_id: str = ""):
+        if not user_id:
+            sessions = ActiveSession.objects.filter(id=session_id)
+            if sessions:
+                close_session = sessions[0]
+                close_session.is_expired = True
+                close_session.save()
+                
+                return True
+        else:
+            sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False)
+            if sessions:
+                close_session = sessions[0]
+                close_session.is_expired = True
+                close_session.save()
+                
+                return True
 
         return False
 

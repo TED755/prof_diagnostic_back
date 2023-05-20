@@ -79,8 +79,22 @@ def refresh(request):
 
 @csrf_exempt
 def end_session(request):
-    pass
+    auth = request.headers['Authorization'].split(' ')
+    
+    token = UserSession.decode_token(auth[1])
 
+    if 'status' in token:
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+
+    if UserSession.end_session_if_not_active(token=token):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+    
+    if not UserSession.end_session(user_id=token['user_info']['user_id']):
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
+    
+    return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=200)
+
+    
 # @csrf_exempt
 # def profile(request):
 #     try:

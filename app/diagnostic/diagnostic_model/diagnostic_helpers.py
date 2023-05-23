@@ -83,11 +83,13 @@ class DiagnosticHelpers():
             if res.diagnostic_type not in gen_results:
                 gen_results[res.diagnostic_type] = []
             
+            tmp_hash = res.hash_recomendation()
             if res.diagnostic_type == 'standard':
-                gen_results[res.diagnostic_type]\
-                    .append(f"{res.hash_recomendation()}. <a href={more_info_links[res.index - 1]}>Узнать подробнее</a>")
+                tmp_hash['link'] = more_info_links[res.index - 1]
             else:
-                gen_results[res.diagnostic_type].append(res.hash_recomendation())
+                tmp_hash['link'] = ""
+
+            gen_results[res.diagnostic_type].append(tmp_hash)
                 
 
         gen_results['competence'] = results_list[0].competence_lvl

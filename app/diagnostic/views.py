@@ -175,7 +175,7 @@ def get_results(request):
         response['data'] = result['data']
 
     return HttpResponse(json.dumps(response,ensure_ascii=False), 
-        content_type="application/json", charset='utf-8', status=result['status'])
+        content_type="application/json", charset='utf-8', status=200)
 
 @csrf_exempt
 def get_questions(request):

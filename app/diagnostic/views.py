@@ -186,10 +186,18 @@ def get_questions(request):
     
     token = UserSession.decode_token(auth[1])
     if 'status' in token:
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+        return HttpResponse(json.dumps({'message':"session expired"}),
+                            content_type="application/json", charset='utf-8', status=token['status'])
     
     if UserSession.end_session_if_not_active(token=token):
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=400)
+        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+
+    # is_expired = UserSession.session_expired(token=token)
+    # if 'data' in is_expired:
+    #     if is_expired['data']['expired']:
+    #         return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+    # else:
+    #     return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
 
     diagnostic_type = request.GET['diagnostic_type']
     if not diagnostic_type:

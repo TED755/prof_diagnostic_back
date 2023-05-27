@@ -49,13 +49,16 @@ def refresh(request):
     token = UserSession.decode_token(data.get('refresh'))
     # print(token)
     if 'status' in token:
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=token['status'])
+        return HttpResponse(json.dumps({'message': token['message']}),
+                            content_type="application/json", charset='utf-8', status=token['status'])
 
-    
+    if not UserSession.validate_refresh_token(token):
+        return HttpResponse(json.dumps({'message': 'Not valid token'}),
+                            content_type="application/json", charset='utf-8', status=401)
     # print(session_expired)
 
-    if UserSession.end_session_if_not_active(token=token):
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=401)
+    # if not UserSession.end_session_if_not_active(token=token):
+    #     return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=500)
     # session_expired = UserSession.session_expired(token=token)
     # if 'data' in session_expired:
     #     if session_expired['data']:
@@ -68,7 +71,7 @@ def refresh(request):
     refresh = UserActivity.refresh_tokens(token)
 
     if refresh['status'] != 201:
-        return HttpResponse(json.dumps({}), content_type="application/json", charset='utf-8', status=refresh['status'])
+        return HttpResponse(json.dumps({}, content_type="application/json", charset='utf-8', status=refresh['status']))
 
     response = {}
 

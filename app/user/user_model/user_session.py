@@ -97,7 +97,7 @@ class UserSession():
             return {'status':401, 'messsage': 'Session not found'}
         return {'status':201, 'message':'success', 'data':sessions[0]}
     
-    def get_active_session_by_user_id(user_id: str, created_at:datetime = None):
+    def get_active_session_by_user_id(user_id: str, created_at: datetime = None):
         if created_at:
             # sessions = ActiveSession.objects.filter(user_id=user_id, is_expired=False, created_at=created_at)
             sessions = ActiveSession.objects.filter(user_id=user_id, created_at=created_at)
@@ -146,15 +146,33 @@ class UserSession():
         if created_at != token['iat']:
             return {'status':401, 'message': 'Session expired', 'data':{'expired': True, 'session_id':_session.id}}
         else:
-            return {'status':201, 'message': 'Session not expired', 'data':False}
+            return {'status':201, 'message': 'Session not expired', 'data':{'expired':False}}
         
     def end_session_if_not_active(token:str):
         session_expired = UserSession.session_expired(token=token)
         print(f"Session info: {session_expired}") #For logging
         if 'data' in session_expired:
-            if session_expired['data']:
+            if session_expired['data']['expired']:
                 if UserSession.end_session(session_expired['data']['session_id']):
                     return True
         else:
             return True
         return False
+    
+    def validate_refresh_token(token):
+        session = ActiveSession.objects.filter(user_id=token['user_info']['user_id']).last()
+        print(session.is_expired)
+        if not session:
+            return False
+        # session = sessions[0]
+        # print(session['data'].expired_at)
+        # _timedelta = datetime.timestamp(datetime.utcnow()) - JWT_REFRESH_TTL - datetime.timestamp(session['data'].created_at)
+        # print(_timedelta)
+        # print(_timedelta)
+        # if _timedelta > 0:
+        #     # print('AAAAAAAAAAAbnavlyay')
+        #     return False
+
+        if token['iat'] != datetime.timestamp(session.created_at):
+            return False
+        return True

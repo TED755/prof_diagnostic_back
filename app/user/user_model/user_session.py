@@ -69,7 +69,7 @@ class UserSession():
             'exp': timestamp + timedelta(seconds=JWT_REFRESH_TTL),
             'iat': timestamp,
             'user_info': user.user_info(),
-            'isDiagnosticCompleted': '',
+            'isDiagnosticCompleted': '', # настроить 
             'type': 'refresh'
         }, SECRET_KEY, algorithm='HS256')
 

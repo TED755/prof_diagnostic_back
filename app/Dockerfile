@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED 1
 
 # установка зависимостей psycopg2 (для работы адаптера PostgreSQL для Python)
 RUN apk update \
-    && apk add postgresql-dev gcc python3-dev musl-dev
+    && apk add g++ zlib-dev jpeg-dev postgresql-dev gcc python3-dev musl-dev
 # установка зависимостей
 RUN pip install --upgrade pip
 COPY ./requirements.txt .

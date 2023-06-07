@@ -3,7 +3,6 @@ from user.models import Recomendation as user_rec
 from diagnostic.models import *
 from .diagnostic_result import *
 from .diagnostic_helpers import *
-# import json
 from datetime import datetime
 
 class DiagnosticActivity():
@@ -12,7 +11,7 @@ class DiagnosticActivity():
         if diagnostics:
             return {'status': 400, 'message': 'Diagnostic already exists'}
         
-        diagnostic = Diagnostic(user_id =  user_id, 
+        diagnostic = Diagnostic(user_id = user_id, 
             diagnostic_type = diagnostic_type if diagnostic_type else 'standard', 
             started = timezone.now())
         diagnostic.save()
@@ -66,7 +65,7 @@ class DiagnosticActivity():
             if not results:
                 user_recomendations = DiagnosticHelpers.generate_results(results_list=[])
                 return {'status': 400, 'message':'Diagnostic not ended', 'data':user_recomendations}
-            # pass
+
         elif method == 'POST':
             if len(answers) < 45:
                 return {'status': 400, 'message':'Diagnostic not ended'}

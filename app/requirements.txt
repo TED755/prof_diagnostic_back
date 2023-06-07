@@ -1,5 +1,8 @@
 Django==3.0.7
+numpy==1.24.3
+pandas==2.0.2
 psycopg2-binary==2.8.5
 pyjwt==2.6.0
 django-cors-headers==3.9.0
 pyyaml==5.3
+gspread==5.8.0

@@ -15,11 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-# from activity import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', include('activity.urls'))
-    path('', include('user.urls')),
-    path('', include('diagnostic.urls'))
+    path('user/', include('user.urls')),
+    path('diagnostic/', include('diagnostic.urls'))
 ]
